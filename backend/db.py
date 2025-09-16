@@ -8,7 +8,7 @@ db_config = {
     "host": os.getenv("MYSQL_HOST", "127.0.0.1"),
     "user": os.getenv("MYSQL_USER", "root"),
     "password": os.getenv("MYSQL_PASSWORD", "1234"),
-    "database": os.getenv("MYSQL_DATABASE", "2project"),
+    "database": os.getenv("MYSQL_DATABASE", "project2"),
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor,
 }
