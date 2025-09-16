@@ -3,7 +3,7 @@ from db import get_connection
 
 router = APIRouter(prefix="/users", tags=["users"])
 
-@router.get("/")
+@router.get("/register")
 def list_users():
     conn = get_connection()
     try:
