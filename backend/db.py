@@ -5,7 +5,7 @@ import os
 load_dotenv()
 
 db_config = {
-    "host": os.getenv("MYSQL_HOST", "192.168.0.1"),
+    "host": os.getenv("MYSQL_HOST", "192.168.0.107"),
     "port": int(os.getenv("MYSQL_PORT", "3307")),
     "user": os.getenv("MYSQL_USER", "project2"),
     "password": os.getenv("MYSQL_PASSWORD", "1111"),
