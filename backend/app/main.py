@@ -20,7 +20,7 @@ app.add_middleware(
 )
 
 # 라우터 등록
-app.include_router(user_router)
+app.include_router(user_router, prefix="/users")
 
 @app.get("/")
 def index():
