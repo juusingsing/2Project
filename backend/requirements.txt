@@ -1,10 +1,18 @@
 fastapi==0.116.1
 uvicorn==0.35.0
 pymysql==1.1.2
-python-dotenv==1.0.0
 sqlalchemy==2.0.43
 python-multipart==0.0.20   # 파일 업로드용 (선택)
 
 # CSV/데이터 적재용
 pandas==2.2.3
 openpyxl==3.1.5   # (선택) XLSX 파일 읽기/쓰기
+
+
+numpy==2.1.3
+scikit-learn==1.6.1
+lightgbm==4.6.0
+xgboost==3.0.5
+python-dotenv==1.1.1
+
+tensorflow==2.19.0
