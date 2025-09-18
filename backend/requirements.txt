@@ -4,3 +4,7 @@ pymysql==1.1.2
 python-dotenv==1.0.0
 sqlalchemy==2.0.43
 python-multipart==0.0.20   # 파일 업로드용 (선택)
+
+# CSV/데이터 적재용
+pandas==2.2.3
+openpyxl==3.1.5   # (선택) XLSX 파일 읽기/쓰기
