@@ -29,3 +29,9 @@ def get_users(id:int, conn: Connection = Depends(get_connection)):
         cur.execute("SELECT * FROM wangnuna WHERE id = %s", (id))
         row = cur.fetchone()
         return row
+    
+@router.put("/user/{id}")
+def update_user(id: int, payload: UserCreate, conn: Connection = Depends(get_connection)):
+    with conn.cursor() as cur:
+        cur.execute("UPDATE wangnuna SET name=%s, age=%s, WHERE id=%s",
+                    )
