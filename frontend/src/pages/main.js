@@ -1,15 +1,22 @@
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Container, Button, } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import TopBar from "../componants/TopBar.js";
+// import Menu from "../componants/Menu.js";
 import mainTop from "../image/mainTop.png";
 import mainSensor from '../image/mainSensor.png';
 import mainImage from '../image/mainImage.png';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useNavigate, useLocation  } from "react-router-dom";
 
-export default function main() {
+export default function Main() {
+    // const [menuOpen, setMenuOpen] = useState(false);
+    const navigate = useNavigate();
+    // const location = useLocation();
+    // useEffect(() => setMenuOpen(false), [location.pathname]);
     return (
         <>
-            <TopBar />
+            {/* <TopBar open={menuOpen} onToggle={() => setMenuOpen((v) => !v)} welcomeText="님 환영합니다!" /> */}
             <Box sx={{
                 width: "100%",
                 minHeight: "650px",
@@ -47,11 +54,11 @@ export default function main() {
                     backgroundRepeat: "no-repeat",
                     borderRadius: '15px',
                     "&:hover": {
-                       backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.85)), url(${mainSensor})`, // 진하게 정도 조절
+                        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.85)), url(${mainSensor})`, // 진하게 정도 조절
                     },
-                    cursor:'pointer'
+                    cursor: 'pointer'
                 }}
-                    onClick={()=>alert("ddddd")}
+                    onClick={() => navigate("/sensor")}
                 >
                     <Container maxWidth="lg" sx={{ mt: '10%', ml: '4%' }} >
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -78,11 +85,11 @@ export default function main() {
                     backgroundRepeat: "no-repeat",
                     borderRadius: '15px',
                     "&:hover": {
-                       backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.85)), url(${mainImage})`, // 진하게 정도 조절
+                        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.85)), url(${mainImage})`, // 진하게 정도 조절
                     },
-                    cursor:'pointer'
+                    cursor: 'pointer'
                 }}
-                    onClick={{}}
+                    onClick={() => navigate("/image")}
                 >
                     <Container maxWidth="lg" sx={{ mt: '10%', ml: '4%' }} >
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -98,6 +105,11 @@ export default function main() {
                     </Container>
                 </Box>
             </Box>
+            {/* <Menu
+                open={menuOpen}
+                onClose={() => setMenuOpen(false)}
+                onSelect={(it) => it.path && navigate(it.path)}
+            /> */}
         </>
     )
 }

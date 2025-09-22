@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/home";
 import HeroSection from "./pages/HeroSection";
@@ -8,16 +9,19 @@ import Sensor from "./pages/Sensor";
 import Page1 from "./pages/page1";
 import Page2 from "./pages/page2";
 
+import MainLayout from "./layouts/MainLayout";
 import TopBar from "../src/componants/TopBar";
+import Menu from "../src/componants/Menu";
 
 function App() {
+  
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HeroSection />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route elment={<TopBar/>}>
+        <Route element={<MainLayout />}>
         <Route path="/main" element={<Main />} />
         <Route path="/sensor" element={<Sensor />} />
         </Route>

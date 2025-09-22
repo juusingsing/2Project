@@ -11,3 +11,29 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+html, body {
+  height: 100%;
+
+}
+
+/* WebKit(Chrome, Edge, Safari) 전역 */
+*::-webkit-scrollbar {
+  width: 10px;              /* 세로 스크롤바 너비 */
+  height: 10px;             /* 가로 스크롤바 높이 */
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;  /* 트랙 배경 */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #001929;
+  border-radius: 8px;
+  border: 1px solid transparent; /* 여백 효과 */
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #0e293a;
+}
