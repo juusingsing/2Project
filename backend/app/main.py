@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routers.user_routes import router as user_router
+from app.api.routers.predict_routes import router as predict_router
 
 app = FastAPI()
 
@@ -21,7 +22,9 @@ app.add_middleware(
 
 # 라우터 등록
 app.include_router(user_router, prefix="/users")
+app.include_router(predict_router, prefix="/pred")
 
 @app.get("/")
 def index():
     return {"msg": "Hello from main!"}
+
