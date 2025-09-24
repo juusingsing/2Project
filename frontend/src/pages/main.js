@@ -7,9 +7,10 @@ import mainTop from "../image/mainTop.png";
 import mainSensor from '../image/mainSensor.png';
 import mainImage from '../image/mainImage.png';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { useNavigate, useLocation  } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Main() {
+
     // const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
     // const location = useLocation();

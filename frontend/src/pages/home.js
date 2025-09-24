@@ -15,7 +15,7 @@ export default function Home() {
   // 데이터 불러오기
   const fetchData = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/users/user`);
+      const res = await axios.get(`${BASE_URL}/users/usertest`);
       setRows(res?.data);
       console.log("rows", res?.data || []);
     } catch (err) {
@@ -26,7 +26,7 @@ export default function Home() {
   // 단건 조회 api 있을 때 
   const fetchDetail = async (id) => {
     try {
-      const res = await axios.get(`${BASE_URL}/users/user/${id}`)
+      const res = await axios.get(`${BASE_URL}/users/usertest/${id}`)
       setDetail(res?.data || null);
     } catch (err) {
       console.error("상세 불러오기 실패", err);
@@ -59,7 +59,7 @@ export default function Home() {
   // 데이터 추가
   const handleAdd = async () => {
     try {
-      await axios.post(`${BASE_URL}/users/user`, {
+      await axios.post(`${BASE_URL}/users/usertest`, {
         name,
         age: Number(age),
       });
