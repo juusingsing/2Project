@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Container, Button, TextField, Input } from "@mui/material";
 import background from "../image/heroSectionBackground.png"
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import axios from "axios"
 import { useEffect, useState } from "react";
 
@@ -43,7 +44,8 @@ export default function Login() {
                 justifyContent: 'center'
 
             }}>
-                <Box maxWidth="lg" sx={{ p: '75px 120px 0px 120px', marginTop: '13%', marginBottom: '18%', background: "rgba(90, 90, 90, 0.43)" }} >
+                <Box maxWidth="lg" sx={{ position: "relative", p: '75px 120px 0px 120px', marginTop: '13%', marginBottom: '18%', background: "rgba(90, 90, 90, 0.43)" }} >
+                    <ArrowBackIosIcon sx={{ color: "#ffffffff", position: 'absolute', top: '15px', left: '18px', cursor: 'pointer' }} onClick={() => navigate(-1)} />
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Typography sx={{ fontSize: '34px', color: '#FFFFFF' }}>로그인</Typography>
                     </Box>
@@ -65,6 +67,7 @@ export default function Login() {
                     <Box sx={{ width: '400px', mt: '15px' }}>
                         <Typography color="#FFFFFF">비밀번호</Typography>
                         <Input disableUnderline
+                            type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             sx={{
@@ -106,11 +109,11 @@ export default function Login() {
                         </Button>
 
                         <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', height: '25px', display: 'flex', gap: 2, alignItems: 'center', paddingInline: '20px' }}>
-                            <Typography onClick={() => navigate('/idfind')} sx={{ color: '#9c9c9cdd', fontSize: '12px', cursor:'pointer' }}>
+                            <Typography onClick={() => navigate('/idfind')} sx={{ color: '#9c9c9cdd', fontSize: '12px', cursor: 'pointer' }}>
                                 아이디 찾기
                             </Typography>
                             <Typography sx={{ color: '#9c9c9cdd', fontSize: '12px' }}>|</Typography>
-                            <Typography onClick={() => navigate('/pwresetid')} sx={{ color: '#9c9c9cdd', fontSize: '12px' , cursor:'pointer'}}>
+                            <Typography onClick={() => navigate('/pwresetid')} sx={{ color: '#9c9c9cdd', fontSize: '12px', cursor: 'pointer' }}>
                                 비밀번호 찾기
                             </Typography>
                         </Box>
