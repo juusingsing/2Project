@@ -106,11 +106,11 @@ export default function Login() {
                         </Button>
 
                         <Box sx={{ backgroundColor: 'rgba(0, 0, 0, 0.2)', height: '25px', display: 'flex', gap: 2, alignItems: 'center', paddingInline: '20px' }}>
-                            <Typography onClick={() => navigate('/idfind')} sx={{ color: '#9c9c9cdd', fontSize: '12px' }}>
+                            <Typography onClick={() => navigate('/idfind')} sx={{ color: '#9c9c9cdd', fontSize: '12px', cursor:'pointer' }}>
                                 아이디 찾기
                             </Typography>
                             <Typography sx={{ color: '#9c9c9cdd', fontSize: '12px' }}>|</Typography>
-                            <Typography onClick={() => navigate('/pwreset')} sx={{ color: '#9c9c9cdd', fontSize: '12px' }}>
+                            <Typography onClick={() => navigate('/pwresetid')} sx={{ color: '#9c9c9cdd', fontSize: '12px' , cursor:'pointer'}}>
                                 비밀번호 찾기
                             </Typography>
                         </Box>
