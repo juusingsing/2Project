@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, BackgroundTasks, Query, HTTPException
 from typing import List
 
-from app.predict import (
+from app.services.predict import (
     run_prediction,
     load_artifacts,
     get_engine,
