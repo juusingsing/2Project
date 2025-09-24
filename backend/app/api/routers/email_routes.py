@@ -25,6 +25,13 @@ def send_email_code(payload: SendCodeIn, bg: BackgroundTasks, conn: Connection =
     code = gen_code()
 
     with conn.cursor() as cur:
+        # idFind 목적일 경우 이메일 존재 여부 확인
+        if payload.purpose == "idFind":
+            cur.execute("SELECT 1 FROM users WHERE email=%s LIMIT 1", (payload.email,))
+            exists = cur.fetchone()
+            if not exists:
+                raise HTTPException(status_code=404, detail="가입된 아이디가 없습니다.")
+
         # 최근 발송 1건 조회 → 쿨다운 체크
         cur.execute("""
             SELECT sent_at FROM email_verifications
