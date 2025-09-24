@@ -30,17 +30,15 @@ export default function Option() {
   });
 
   useEffect(() => {
-    const id = user?.name ?? sessionStorage.getItem("user_id") ?? "";
+    const id = user?.id ?? sessionStorage.getItem("user_id") ?? "";
     InfoSet(id);
-
+    
   }, [user?.name, user?.email]);
 
   const InfoSet = async (id) => {
     try {
       const res = await axios.get(`${BASE_URL}/users/userInfo/${id}`);
-      console.log("res",res);
       setInfo(res?.data);
-
     } catch (err) {
       console.error("회원정보 불러오기 실패", err);
     }
