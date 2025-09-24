@@ -16,3 +16,9 @@ xgboost==3.0.5
 python-dotenv==1.1.1
 
 tensorflow==2.19.0
+
+
+# 이메일 인증
+email-validator>=2.2.0
+# 비밀번호 해시/검증
+passlib[bcrypt]==1.7.4

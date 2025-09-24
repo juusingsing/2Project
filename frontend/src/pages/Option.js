@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Typography,
   Box,
@@ -11,8 +11,13 @@ import {
 import optionCard from "../image/optionCard.png";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import CloseIcon from "@mui/icons-material/Close";
+import { useOutletContext } from "react-router-dom";
+import axios from "axios"
 
 export default function Option() {
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const { user, setUser } = useOutletContext();
+
   const [info, setInfo] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -23,6 +28,23 @@ export default function Option() {
     department: "",
     position: "",
   });
+
+  useEffect(() => {
+    const id = user?.name ?? sessionStorage.getItem("user_id") ?? "";
+    InfoSet(id);
+
+  }, [user?.name, user?.email]);
+
+  const InfoSet = async (id) => {
+    try {
+      const res = await axios.get(`${BASE_URL}/users/userInfo/${id}`);
+      console.log("res",res);
+      setInfo(res?.data);
+
+    } catch (err) {
+      console.error("회원정보 불러오기 실패", err);
+    }
+  }
 
   const openEdit = () => {
     setEditForm({
@@ -118,7 +140,7 @@ export default function Option() {
 
             <Divider sx={{ borderColor: "rgba(255,255,255,0.2)", mb: 2 }} />
 
-            <Box sx={{ display: "grid", gap: 1.2 , p:'10px 10px 20px 10px'}}>
+            <Box sx={{ display: "grid", gap: 1.2, p: '10px 10px 20px 10px' }}>
               <LabelInput label="이름" name="name" placeholder="이름" />
               <LabelInput label="이메일" name="email" placeholder="email@domain.com" />
               <LabelInput label="연락처" name="phone" placeholder="010-0000-0000" />
@@ -127,76 +149,76 @@ export default function Option() {
               <LabelInput label="직책" name="position" placeholder="직책" />
             </Box>
 
-            <Box sx={{textAlign:"center"}}>
-            <Button
-              onClick={handleSubmit}
-              variant="contained"
-              sx={{
-                mt: 2,
-                width:'70%',
-                height: 44,
-                bgcolor: "#001929",
-                borderRadius: "10px",
-                "&:hover": { bgcolor: "#02253b" },
-              }}
-            >
-              수정
-            </Button>
+            <Box sx={{ textAlign: "center" }}>
+              <Button
+                onClick={handleSubmit}
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  width: '70%',
+                  height: 44,
+                  bgcolor: "#001929",
+                  borderRadius: "10px",
+                  "&:hover": { bgcolor: "#02253b" },
+                }}
+              >
+                수정
+              </Button>
             </Box>
           </Paper>
         </Box>
       </Modal>
 
-    <Box sx={{display: "flex",flexDirection:'column', backgroundColor:'#92a5b6ff', minHeight:'100vh', width: "100%"}}>
-      {/* Header */}
-      <Typography sx={{ fontSize: "24px", fontWeight: 600, p: "20px 0 0 60px", color:'#ffffffff' }}>
-        설정
-      </Typography>
-
-      {/* Profile Card */}
-      <Paper sx={{ bgcolor: "#41515B", m: "20px 50px", borderRadius: "15px" }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Box
-              component="img"
-              src={optionCard}
-              alt="option"
-              sx={{ width: 200, borderRadius: "12px" }}
-            />
-            <Divider orientation="vertical" sx={{ borderColor: "rgba(255, 255, 255, 0.58)" , mr:2}} />
-            <Box sx={{ color: "#fff", display: "grid", gap: 0.6,  }}>
-              <Typography>이름: {info?.name ?? "-"}</Typography>
-              <Typography>이메일: {info?.email ?? "-"}</Typography>
-              <Typography>연락처: {info?.phone ?? "-"}</Typography>
-              <Typography>회사: {info?.company ?? "-"}</Typography>
-              <Typography>부서: {info?.department ?? "-"}</Typography>
-              <Typography>직책: {info?.position ?? "-"}</Typography>
-            </Box>
-          </Box>
-
-          <EditSquareIcon
-            sx={{
-              fontSize: 30,
-              color: "#fff",
-              mr:1,
-              cursor: "pointer",
-            }}
-            onClick={openEdit}
-          />
-        </Box>
-      </Paper>
-
-      {/* Recent Login */}
-      <Paper sx={{ bgcolor: "#41515B", m: "20px 50px", borderRadius: "15px" }}>
-        <Typography sx={{ fontWeight: 500, fontSize: "18px", color: "#fff", p: 2 }}>
-          최근 로그인
+      <Box sx={{ display: "flex", flexDirection: 'column', backgroundColor: '#92a5b6ff', minHeight: '100vh', width: "100%" }}>
+        {/* Header */}
+        <Typography sx={{ fontSize: "24px", fontWeight: 600, p: "20px 0 0 60px", color: '#ffffffff' }}>
+          설정
         </Typography>
-        <Box sx={{ p: 2, color: "#dbe2e8" }}>
-          {/* TODO: 최근 로그인 내역 리스트/테이블 렌더링 */}
-          기록 없음
-        </Box>
-      </Paper>
-      </Box>     
+
+        {/* Profile Card */}
+        <Paper sx={{ bgcolor: "#41515B", m: "20px 50px", borderRadius: "15px" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box
+                component="img"
+                src={optionCard}
+                alt="option"
+                sx={{ width: 200, borderRadius: "12px" }}
+              />
+              <Divider orientation="vertical" sx={{ borderColor: "rgba(255, 255, 255, 0.58)", mr: 2 }} />
+              <Box sx={{ color: "#fff", display: "grid", gap: 0.6, }}>
+                <Typography>이름: {info?.name ?? "-"}</Typography>
+                <Typography>이메일: {info?.email ?? "-"}</Typography>
+                <Typography>연락처: {info?.phone ?? "-"}</Typography>
+                <Typography>회사: {info?.company ?? "-"}</Typography>
+                <Typography>부서: {info?.department ?? "-"}</Typography>
+                <Typography>직책: {info?.position ?? "-"}</Typography>
+              </Box>
+            </Box>
+
+            <EditSquareIcon
+              sx={{
+                fontSize: 30,
+                color: "#fff",
+                mr: 1,
+                cursor: "pointer",
+              }}
+              onClick={openEdit}
+            />
+          </Box>
+        </Paper>
+
+        {/* Recent Login */}
+        <Paper sx={{ bgcolor: "#41515B", m: "20px 50px", borderRadius: "15px" }}>
+          <Typography sx={{ fontWeight: 500, fontSize: "18px", color: "#fff", p: 2 }}>
+            최근 로그인
+          </Typography>
+          <Box sx={{ p: 2, color: "#dbe2e8" }}>
+            {/* TODO: 최근 로그인 내역 리스트/테이블 렌더링 */}
+            기록 없음
+          </Box>
+        </Paper>
+      </Box>
     </>
   );
 }

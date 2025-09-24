@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routers.user_routes import router as user_router
+from app.api.routers.email_routes import router as email_router
 
 app = FastAPI()
 
@@ -14,13 +15,14 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  # 프론트 주소
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],             # GET, POST, PUT, DELETE, OPTIONS...
     allow_headers=["*"],             # Authorization, Content-Type 등
 )
 
 # 라우터 등록
 app.include_router(user_router, prefix="/users")
+app.include_router(email_router, prefix="/email")
 
 @app.get("/")
 def index():
