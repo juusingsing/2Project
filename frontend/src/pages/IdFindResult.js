@@ -1,11 +1,15 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Typography, Container, Button, Input, } from "@mui/material";
 import background from "../image/heroSectionBackground.png";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export default function IdFindResult() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const id = location.state?.id?.trim();
+    const createdAt = location.state?.created_at;
+
     return (
         <>
             <Box sx={{
@@ -29,8 +33,8 @@ export default function IdFindResult() {
                         <Typography sx={{ color: '#ffffffff' }}>회원님의 아이디는 다음과 같습니다.</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column', mt: 13, gap: 2 }}>
-                        <Typography sx={{ color: '#ffffff' }}>아이디: </Typography>
-                        <Typography sx={{ color: '#ffffff' }}>가입 일자: </Typography>
+                        <Typography sx={{ color: '#ffffff' }}>아이디: {id || "-"}</Typography>
+                        <Typography sx={{ color: '#ffffff' }}>가입 일자: {createdAt || "-"}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 2, mt: '140px' }}>
 
@@ -44,7 +48,7 @@ export default function IdFindResult() {
                                 fontWeight: '500',
                                 fontSize: '13px'
                             }}
-                            onClick={{}}>
+                            onClick={() => navigate("/pwresetid")}>
                             비밀번호 재설정
                         </Button>
                         <Button
@@ -57,7 +61,7 @@ export default function IdFindResult() {
                                 fontWeight: '500',
                                 fontSize: '13px'
                             }}
-                            onClick={{}}>
+                            onClick={() => navigate("/login")}>
                             로그인
                         </Button>
                     </Box>

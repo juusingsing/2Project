@@ -18,6 +18,7 @@ import MainLayout from "./layouts/MainLayout";
 import TopBar from "../src/componants/TopBar";
 import Menu from "../src/componants/Menu";
 
+
 function App() {
   
   return (
@@ -30,7 +31,7 @@ function App() {
         <Route path="/idfindresult" element={<IdFindResult/>}/>
         <Route path="/pwresetid" element={<PwResetId/>}/>
         <Route path="/pwresetemail" element={<PwResetEmail/>}/>
-        <Route path="pwreset" element={<PwReset/>}/>
+        <Route path="/pwreset" element={<PwReset/>}/>
         <Route element={<MainLayout />}>
         <Route path="/main" element={<Main />} />
         <Route path="/sensor" element={<Sensor />} />

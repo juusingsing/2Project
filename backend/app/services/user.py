@@ -34,6 +34,54 @@ def register_user(conn: Connection, user) -> str:
         conn.commit()
     return "success"
 
+def idCheck(conn: Connection, user_id: str) -> str:
+    """비밀번호찾기에서 아이디찾기"""
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT user_id
+            FROM users
+            WHERE user_id = %s AND del_yn = 'N'
+        """, (user_id,))
+        row = cur.fetchone()
+
+        if not row:
+            raise HTTPException(status_code=401, detail="아이디가 존재하지않습니다.")
+    return row
+    
+def getId(conn: Connection, email: str) -> str:
+    """아이디찾기"""
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT user_id, created_at
+            FROM users
+            WHERE email = %s AND del_yn = 'N'
+        """, (email,))
+        row = cur.fetchone()
+
+        if not row:
+            raise HTTPException(status_code=401, detail="아이디가 존재하지않습니다.")
+    return row
+
+def reset_password(conn: Connection, user) -> str:
+    """비밀번호 재설정"""
+    with conn.cursor() as cur:
+        # 비밀번호 업데이트
+        sql = """
+            UPDATE users
+            SET password = %s
+            WHERE email = %s AND del_yn = 'N'
+        """
+        hashed_pw = pwd_ctx.hash(user.password)
+        cur.execute(sql, (hashed_pw, user.email,))
+        affected = cur.rowcount   # 영향을 받은 행 수
+        
+        conn.commit()
+
+        if affected == 0:
+            raise HTTPException(status_code=401, detail="비밀번호 재설정 실패")
+
+    return "비밀번호 재설정 성공"
+
 
 def login_user(conn: Connection, payload):
     """로그인"""
