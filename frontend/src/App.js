@@ -4,6 +4,8 @@ import Home from "./pages/home";
 import HeroSection from "./pages/HeroSection";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import IdFind from "./pages/IdFind";
+import PwReset from "./pages/PwReset";
 import Main from "./pages/Main";
 import Sensor from "./pages/Sensor";
 import Video from "./pages/Video";
@@ -25,6 +27,8 @@ function App() {
         <Route path="/" element={<HeroSection />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/idfind" element={<IdFind/>}/>
+        <Route path="pwreset" element={<PwReset/>}/>
         <Route element={<MainLayout />}>
         <Route path="/main" element={<Main />} />
         <Route path="/sensor" element={<Sensor />} />
