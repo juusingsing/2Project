@@ -21,5 +21,6 @@ joblib==1.4.2
 
 # 이메일 인증
 email-validator>=2.2.0
-# 비밀번호 해시/검증
+# 비밀번호 해시/검증 — 충돌 방지용으로 명시 고정
 passlib[bcrypt]==1.7.4
+bcrypt==4.1.3
