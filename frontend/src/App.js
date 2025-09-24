@@ -5,8 +5,10 @@ import HeroSection from "./pages/HeroSection";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import IdFind from "./pages/IdFind";
+import IdFindResult from "./pages/IdFindResult";
 import PwResetId from "./pages/PwResetId";
 import PwReset from "./pages/PwReset";
+import PwResetEmail from "./pages/PwResetEmail";
 import Main from "./pages/Main";
 import Sensor from "./pages/Sensor";
 import Video from "./pages/Video";
@@ -29,7 +31,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/idfind" element={<IdFind/>}/>
+        <Route path="/idfindresult" element={<IdFindResult/>}/>
         <Route path="/pwresetid" element={<PwResetId/>}/>
+        <Route path="/pwresetemail" element={<PwResetEmail/>}/>
         <Route path="pwreset" element={<PwReset/>}/>
         <Route element={<MainLayout />}>
         <Route path="/main" element={<Main />} />
