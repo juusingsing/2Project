@@ -44,7 +44,7 @@ export default function Register() {
             return;
         }
 
-        // 4. 비밀번호 확인 미입력 또는 불일치
+        // 4. 비밀번호 불일치
         if (password !== passwordCheck) {
             alert("비밀번호가 일치하지 않습니다. 동일하게 입력해주세요.");
             return;
@@ -107,6 +107,16 @@ export default function Register() {
 
     const emailSend = async () => {
         console.log("email", email);
+
+        try {
+            const res = await axios.get(`${BASE_URL}/email/emailCheck/${email}`)
+            console.log("res emailCheck true", res);
+        } catch (err) {
+            console.error("res emailCheck false", err);
+            alert(err?.response?.data?.detail);
+            return;
+        }
+
         try {
             const res = await axios.post(`${BASE_URL}/email/send-email-code`, {
                 email: email,

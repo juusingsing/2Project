@@ -17,11 +17,6 @@ class UserLogin(BaseModel):
     user_id: str = Field(..., description="로그인 아이디")
     password: str = Field(..., description="비밀번호")
 
-class UserCreateTest(BaseModel):
-    name: str = Field(..., min_length=1)
-    age: int = Field(..., ge=0)
-
-class UserOutTest(BaseModel):
-    id: int
-    name: str
-    age: int
+class UserPasswordReset(BaseModel):
+    email: str = Field(..., description="가입된 이메일")
+    password: str = Field(..., description="비밀번호")

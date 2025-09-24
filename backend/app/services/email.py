@@ -88,3 +88,18 @@ def send_verification_email(bg, email: str, code: str):
     subject = "이메일 인증번호"
     body = f"인증번호는 {code} 입니다. 유효기간은 {CODE_TTL_MIN}분입니다."
     bg.add_task(send_email, email, subject, body)
+
+
+def emailCheck(conn: Connection, email: str) -> str:
+    """아이디찾기"""
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT email
+            FROM users
+            WHERE email = %s AND del_yn = 'N'
+        """, (email,))
+        row = cur.fetchone()
+
+        if row:
+            raise HTTPException(status_code=401, detail="이미 가입한 이메일입니다.")
+    return {"status" : "ok"}

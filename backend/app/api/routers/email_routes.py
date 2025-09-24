@@ -8,10 +8,14 @@ from app.services.email import (
     create_and_save_code,
     verify_code,
     send_verification_email,
+    emailCheck,
 )
 
 router = APIRouter(prefix="", tags=["email-auth"])
 
+@router.get("/emailCheck/{email}")
+def emailCheck_handler(email: str, conn: Connection = Depends(get_connection)):
+    return emailCheck(conn, email)
 
 @router.post("/send-email-code")
 def send_email_code(payload: SendCodeIn, bg: BackgroundTasks, conn: Connection = Depends(get_connection)):

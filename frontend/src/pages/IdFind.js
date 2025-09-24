@@ -56,11 +56,21 @@ export default function IdFind() {
         }
     }
 
-    const idFindOut = () => {
+    const idFindOut = async () => {
         // 1. 이메일 인증 안 됨
         if (!DupEmailCheck) {
             alert("이메일을 인증해주세요.");
             return;
+        }
+
+        try {
+            const res = await axios.get(`${BASE_URL}/users/getId/${email}`);
+            console.log("res", res);
+            const id = res?.data?.user_id;
+            const created_at = res?.data?.created_at;
+            navigate("/idfindresult", { state: { id: id.trim(), created_at: created_at } });
+        } catch (err) {
+            console.error("아이디 불러오기 실패", err);
         }
         alert("good");
     }
