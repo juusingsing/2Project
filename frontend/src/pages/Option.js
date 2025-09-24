@@ -38,6 +38,7 @@ export default function Option() {
   const InfoSet = async (id) => {
     try {
       const res = await axios.get(`${BASE_URL}/users/userInfo/${id}`);
+      console.log("res", res);
       setInfo(res?.data);
     } catch (err) {
       console.error("회원정보 불러오기 실패", err);
@@ -70,33 +71,43 @@ export default function Option() {
     alert("수정되었습니다.")
   };
 
-  const LabelInput = ({ label, name, placeholder }) => (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-      <Typography sx={{ color: "#fff", fontSize: 14 }}>{label}</Typography>
-      <Input
-        name={name}
-        value={editForm[name]}
-        onChange={handleChange}
-        disableUnderline
-        placeholder={placeholder}
-        sx={{
-          mt: "6px",
-          width: "100%",
-          bgcolor: "#fff",
-          height: 40,
-          borderRadius: "10px",
-          px: "10px",
-        }}
-      />
-    </Box>
-  );
+  // const LabelInput = ({ label, name, placeholder, }) => (
+  //   <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+  //     <Typography sx={{ color: "#fff", fontSize: 14 }}>{label}</Typography>
+  //     <Input
+  //       name={name}
+  //       value={editForm[name]}
+  //       onChange={handleChange}
+  //       disableUnderline
+  //       placeholder={placeholder}
+  //       sx={{
+  //         mt: "6px",
+  //         width: "100%",
+  //         bgcolor: "#fff",
+  //         height: 40,
+  //         borderRadius: "10px",
+  //         px: "10px",
+  //       }}
+  //     />
+  //   </Box>
+  // );
+
 
   return (
     <>
       {/* Edit Modal */}
-      <Modal open={editModalOpen} onClose={closeEdit}>
+      <Modal
+        open={editModalOpen}
+        onClose={(e, reason) => {
+          if (reason === 'backdropClick') return;
+          closeEdit();
+        }}
+        keepMounted
+        disableAutoFocus
+        disableEnforceFocus
+        disableRestoreFocus>
         <Box
-          onClick={closeEdit}
+          // onClick={closeEdit}
           sx={{
             position: "fixed",
             inset: 0,
@@ -109,7 +120,6 @@ export default function Option() {
           }}
         >
           <Paper
-            onClick={(e) => e.stopPropagation()}
             sx={{
               width: 400,
               bgcolor: "#41515B",
@@ -138,13 +148,82 @@ export default function Option() {
 
             <Divider sx={{ borderColor: "rgba(255,255,255,0.2)", mb: 2 }} />
 
-            <Box sx={{ display: "grid", gap: 1.2, p: '10px 10px 20px 10px' }}>
-              <LabelInput label="이름" name="name" placeholder="이름" />
-              <LabelInput label="이메일" name="email" placeholder="email@domain.com" />
-              <LabelInput label="연락처" name="phone" placeholder="010-0000-0000" />
-              <LabelInput label="회사" name="company" placeholder="회사명" />
-              <LabelInput label="부서" name="department" placeholder="부서명" />
-              <LabelInput label="직책" name="position" placeholder="직책" />
+            <Box sx={{ display: "grid", gap: 1, p: '10px 10px 20px 10px' }}>
+              <Typography sx={{ color: "#ffffffff" }}>이름</Typography>
+              <Input label="이름" name="name" placeholder="이름"
+              disableUnderline
+              value={editForm.name ?? ""}
+              onChange={handleChange}
+                sx={{
+                  width: "100%",
+                  bgcolor: "#fff",
+                  height: 40,
+                  borderRadius: "10px",
+                  px: "10px",
+                }} />
+              <Typography sx={{ color: "#ffffffff" }}>이메일</Typography>
+              <Input label="이메일" name="email" placeholder="email@domain.com"
+              disableUnderline
+              value={editForm.email ?? ""}
+              onChange={handleChange}
+                sx={{
+                  width: "100%",
+                  bgcolor: "#fff",
+                  height: 40,
+                  borderRadius: "10px",
+                  px: "10px",
+                }}
+              />
+              <Typography sx={{ color: "#ffffffff" }}>연락처</Typography>
+              <Input label="연락처" name="phone" placeholder="010-0000-0000"
+              disableUnderline
+              value={editForm.phone ?? ""}
+              onChange={handleChange}
+                sx={{
+                  width: "100%",
+                  bgcolor: "#fff",
+                  height: 40,
+                  borderRadius: "10px",
+                  px: "10px",
+                }}
+              />
+              <Typography sx={{ color: "#ffffffff" }}>회사</Typography>
+              <Input label="회사" name="company" placeholder="회사명"
+              disableUnderline
+               value={editForm.company ?? ""}
+               onChange={handleChange}
+                sx={{
+                  width: "100%",
+                  bgcolor: "#fff",
+                  height: 40,
+                  borderRadius: "10px",
+                  px: "10px",
+                }} />
+              <Typography sx={{ color: "#ffffffff" }}>부서</Typography>
+              <Input label="부서" name="department" placeholder="부서명"
+              disableUnderline
+              value={editForm.department ?? ""}
+              onChange={handleChange}
+                sx={{
+                  width: "100%",
+                  bgcolor: "#fff",
+                  height: 40,
+                  borderRadius: "10px",
+                  px: "10px",
+                }} />
+              <Typography sx={{ color: "#ffffffff" }}>직책</Typography>
+              <Input label="직책" name="position" placeholder="직책"
+              disableUnderline
+              value={editForm.position ?? ""}
+              onChange={handleChange}
+                sx={{
+                  width: "100%",
+                  bgcolor: "#fff",
+                  height: 40,
+                  borderRadius: "10px",
+                  px: "10px",
+                }}
+              />
             </Box>
 
             <Box sx={{ textAlign: "center" }}>
