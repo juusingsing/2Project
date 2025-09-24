@@ -164,6 +164,7 @@ export default function Option() {
               <Typography sx={{ color: "#ffffffff" }}>이메일</Typography>
               <Input label="이메일" name="email" placeholder="email@domain.com"
               disableUnderline
+              disabled 
               value={editForm.email ?? ""}
               onChange={handleChange}
                 sx={{
