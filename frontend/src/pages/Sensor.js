@@ -13,13 +13,13 @@ export default function Sensor() {
                 minHeight: "100vh",
                 display: "flex",
                 backgroundColor:'#92a5b6ff'
-                // backgroundImage: `linear-gradient(rgba(153, 153, 153, 0.3), rgba(153, 153, 153, 0.3)), url(${background})`,
+                // backgroundImage: `linear-gradient(rgba(216, 216, 216, 0.7), rgba(216, 216, 216, 0.7)), url(${background})`,
                 // backgroundSize: "cover",
                 // backgroundPosition: "center",
                 // backgroundRepeat: "no-repeat",
             }}>
                 <Box>
-                    <Typography sx={{ color: '#FFFFFF', m: '25px 0px 20px 40px', fontSize: '24px', fontWeight: 600 }}>농도 기반 예측</Typography>
+                    <Typography sx={{ color: '#ffffffff', m: '25px 0px 20px 40px', fontSize: '24px', fontWeight: 600 }}>농도 기반 예측</Typography>
                     <Box sx={{ justifyItems: 'center' }}>
 
                         <Stack direction="row" spacing={6} sx={{ width: '100vw', justifyContent: 'center' }}>
@@ -29,6 +29,13 @@ export default function Sensor() {
                                     m: '15px 0px 0px 20px',
                                     fontSize: '20px',
                                 }}>가스</Typography>
+                                {/* 가스 종류 연결 */}
+                                <Typography sx={{
+                                    textAlign:'center',
+                                    color: '#FFFFFF',
+                                    mt: '50px',
+                                    fontSize: '30px',
+                                }}>가스 종류</Typography>
                             </Paper>
                             <Paper sx={{ width: '27%', backgroundColor: '#41515B', borderRadius: '25px' }}>
                                 <Typography sx={{
@@ -36,12 +43,32 @@ export default function Sensor() {
                                     m: '15px 0px 0px 20px',
                                     fontSize: '20px'
                                 }}>LEL</Typography>
+                                <Box sx={{display:'flex', justifyContent:'center', mt:'35px', alignItems:'center', gap:1}}>
+                                {/* 여기 LEL 연결 */}
+                                <Typography sx={{
+                                    color: '#FFFFFF',
+                                    m: '15px 0px 0px 20px',
+                                    fontSize: '30px'
+                                }}>수치</Typography>
+                                <Typography sx={{
+                                    color: '#FFFFFF',
+                                    m: '15px 0px 0px 20px',
+                                    fontSize: '20px'
+                                }}>%</Typography>
+                                </Box>
                             </Paper>
                             <Paper sx={{ width: '27%', backgroundColor: '#41515B', borderRadius: '25px' }}>
                                 <Typography sx={{
                                     color: '#FFFFFF',
                                     m: '15px 0px 0px 20px',
                                     fontSize: '20px'
+                                }}>상태</Typography>
+                                {/* 여기 상태 연결 */}
+                                <Typography sx={{
+                                    textAlign:'center',
+                                    color: '#FFFFFF',
+                                    mt: '50px',
+                                    fontSize: '30px'
                                 }}>상태</Typography>
                             </Paper>
                         </Stack>

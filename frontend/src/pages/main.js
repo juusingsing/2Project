@@ -89,12 +89,12 @@ export default function Main() {
                     },
                     cursor: 'pointer'
                 }}
-                    onClick={() => navigate("/image")}
+                    onClick={() => navigate("/video")}
                 >
                     <Container maxWidth="lg" sx={{ mt: '10%', ml: '4%' }} >
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Typography fontSize="28px" color="common.white" fontWeight={700}>
-                                이미지
+                                영상
                             </Typography>
                             <ArrowForwardIosIcon sx={{ color: '#FFFFFF' }} />
                         </Box>

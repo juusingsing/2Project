@@ -1,19 +1,22 @@
 import React from "react";
 import { Drawer, Box, List, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { useLocation } from "react-router-dom";
 
 export default function BottomMenu({ open, onClose, onSelect }) {
     const items = [
         { key: "home", label: "홈", path: "/main" },
         { key: "sensor", label: "센서", path: "/sensor" },
-        { key: "image", label: "이미지", path: "/image" },
+        { key: "video", label: "영상", path: "/video" },
         { key: "menu3", label: "메뉴3", path: "/menu3" },
     ];
-    const bottomItems=[
-        {key:"alert", label:"알림", path:"/alert"},
-        {key:"option", label:"설정", path:"/option"},
-        {key:"logout", label:"로그아웃"}
+    const bottomItems = [
+        { key: "alert", label: "알림", path: "/alert" },
+        { key: "option", label: "설정", path: "/option" },
+        { key: "logout", label: "로그아웃" }
     ]
     const HEADER_H = 60;
+    const { pathname } = useLocation();
+    const isActive = (path) => !!path && pathname.startsWith(path);
     return (
         <Drawer
             anchor="right"
@@ -43,44 +46,74 @@ export default function BottomMenu({ open, onClose, onSelect }) {
         >
             <Box sx={{ p: 4 }}>
                 {/* <Box sx={{ width: 40, height: 4, bgcolor: "grey.500", borderRadius: 99, mx: "auto", mb: 2 }} /> */}
-                <Typography sx={{ px: 1, pb: 1, opacity: 0.9, fontSize:'24px' }}>메뉴</Typography>
+                <Typography sx={{ px: 1, pb: 1, opacity: 0.9, fontSize: '24px' }}>메뉴</Typography>
                 <List sx={{ p: 0 }}>
-                    {items.map((it) => (
-                        <ListItemButton
-                            key={it.key}
-                            onClick={() => {
-                                onSelect?.(it);
-                                onClose();
-                            }}
-                            sx={{ borderRadius: 2, mb: 1, "&:hover": { bgcolor: "rgba(255, 255, 255, 0.75)", color:'black' } }}
-                        >
-                            <ListItemText primary={it.label} primaryTypographyProps={{ fontSize: 20, fontWeight: 400, lineHeight: 1.1 ,}}/>
-                        </ListItemButton>
-                    ))}
+                    {items.map((it) => {
+                        const selected = isActive(it.path);
+                        return (
+                            <ListItemButton
+                                key={it.key}
+                                selected={selected}
+                                aria-current={selected ? "page" : undefined}
+                                onClick={() => {
+                                    onSelect?.(it);
+                                    onClose();
+                                }}
+                                sx={{
+                                    borderRadius: 2,
+                                    mb: 1,
+                                    "&:hover": { bgcolor: "rgba(255, 255, 255, 0.75)", color: 'black' },
+                                    "&.Mui-selected": {
+                                        bgcolor: "rgba(255,255,255,0.95)",
+                                        color: "black",
+                                    },
+                                    "&.Mui-selected:hover": {
+                                        bgcolor: "rgba(255,255,255,0.95)",
+                                        color: "black",
+                                    },
+                                }}
+                            >
+                                <ListItemText primary={it.label} primaryTypographyProps={{ fontSize: 20, fontWeight: 400, lineHeight: 1.1, }} />
+                            </ListItemButton>
+                        )
+                    })}
                 </List>
             </Box>
-            <Box sx={{p:4, marginTop:40}}>
+            <Box sx={{ p: 4, marginTop: 40 }}>
                 <List >
-                    {bottomItems.map((bit)=>(
+                    {bottomItems.map((bit) => {
+                        const selected = isActive(bit.path);
+                        return(
                         <ListItemButton
-                        key={bit.key}
-                        onClick={()=>{
-                            if(bit.key==="logout"){
-                                // onLogout?.();
-                            }else{
-                                onSelect?.(bit);
-                            }
-                            onClose();
-                        }}
-                        sx={{ 
-                            borderRadius: 2, 
-                            mb: 1, 
-                            "&:hover": { bgcolor: "rgba(255, 255, 255, 0.75)", color:'black' },
-                        }}
+                            key={bit.key}
+                            selected={selected}
+                            aria-current={selected ? "page" : undefined}
+                            onClick={() => {
+                                if (bit.key === "logout") {
+                                    // onLogout?.();
+                                } else {
+                                    onSelect?.(bit);
+                                }
+                                onClose();
+                            }}
+                            sx={{
+                                borderRadius: 2,
+                                mb: 1,
+                                "&:hover": { bgcolor: "rgba(255, 255, 255, 0.75)", color: 'black' },
+                                 "&.Mui-selected": {
+                                        bgcolor: "rgba(255,255,255,0.95)",
+                                        color: "black",
+                                    },
+                                    "&.Mui-selected:hover": {
+                                        bgcolor: "rgba(255,255,255,0.95)",
+                                        color: "black",
+                                    },
+                            }}
                         >
-                            <ListItemText primary={bit.label} primaryTypographyProps={{ fontSize: 12, fontWeight: 400, lineHeight: 1.1 }}/>
+                            <ListItemText primary={bit.label} primaryTypographyProps={{ fontSize: 12, fontWeight: 400, lineHeight: 1.1 }} />
                         </ListItemButton>
-                    ))}
+                        )
+})}
                 </List>
             </Box>
         </Drawer>

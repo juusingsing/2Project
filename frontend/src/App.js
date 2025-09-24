@@ -4,8 +4,12 @@ import Home from "./pages/home";
 import HeroSection from "./pages/HeroSection";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Main from "./pages/main";
+import Main from "./pages/Main";
 import Sensor from "./pages/Sensor";
+import Video from "./pages/Video";
+
+import Option from "./pages/Option";
+
 import Page1 from "./pages/page1";
 import Page2 from "./pages/page2";
 
@@ -24,6 +28,8 @@ function App() {
         <Route element={<MainLayout />}>
         <Route path="/main" element={<Main />} />
         <Route path="/sensor" element={<Sensor />} />
+        <Route path="/option" element={<Option />} />
+        <Route path="/video" element={<Video/>}/>
         </Route>
         <Route path="/1" element={<Page1 />} />
         <Route path="/2" element={<Page2 />} />
