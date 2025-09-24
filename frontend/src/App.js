@@ -5,6 +5,7 @@ import HeroSection from "./pages/HeroSection";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import IdFind from "./pages/IdFind";
+import PwResetId from "./pages/PwResetId";
 import PwReset from "./pages/PwReset";
 import Main from "./pages/Main";
 import Sensor from "./pages/Sensor";
@@ -28,6 +29,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/idfind" element={<IdFind/>}/>
+        <Route path="/pwresetid" element={<PwResetId/>}/>
         <Route path="pwreset" element={<PwReset/>}/>
         <Route element={<MainLayout />}>
         <Route path="/main" element={<Main />} />
