@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends
 from pymysql.connections import Connection
 
-from app.schemas.user import UserRegister, UserLogin, UserPasswordReset
+from app.schemas.user import UserRegister, UserLogin, UserPasswordReset, UserEditForm
 from app.db.session import get_connection
 from app.services.user import (
     check_duplicate_id,
@@ -12,6 +12,7 @@ from app.services.user import (
     idCheck,
     reset_password,
     getId,
+    edit_user_info,
 )
 
 router = APIRouter(prefix="", tags=["users"])
@@ -49,3 +50,8 @@ def login(payload: UserLogin, conn: Connection = Depends(get_connection)):
 def user_info(id: str, conn: Connection = Depends(get_connection)):
     row = get_user_info(conn, id)
     return row
+
+@router.post("/editUser")
+def EditUser_handler(user: UserEditForm, conn: Connection = Depends(get_connection)):
+    result = edit_user_info(conn, user)
+    return {"result": result}

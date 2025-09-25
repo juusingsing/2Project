@@ -120,3 +120,41 @@ def get_user_info(conn: Connection, user_id: str):
     except Exception as e:
         print("userInfo error:", e)
         raise HTTPException(status_code=500, detail="internal error")
+
+def edit_user_info(conn: Connection, user) -> str:
+    """회원정보 수정"""
+    try:
+        with conn.cursor() as cur:
+            sql = """
+                UPDATE users
+                SET
+                    name       = %s,
+                    phone      = NULLIF(%s, ''),
+                    company    = NULLIF(%s, ''),
+                    department = NULLIF(%s, ''),
+                    position   = NULLIF(%s, ''),
+                    updated_at = NOW()
+                WHERE email = %s AND del_yn = 'N'
+            """
+            cur.execute(sql, (
+                user.name,
+                user.phone or "",
+                user.company or "",
+                user.department or "",
+                user.position or "",
+                user.email,
+            ))
+            if cur.rowcount == 0:
+                raise HTTPException(status_code=404, detail="회원정보 수정 실패")
+
+        conn.commit()
+        
+        return "회원정보 수정 성공"
+
+    except HTTPException:
+        conn.rollback()
+        raise
+    except Exception as e:
+        conn.rollback()
+        print("edit_user_info error:", e)
+        raise HTTPException(status_code=500, detail="internal error")

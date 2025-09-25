@@ -32,13 +32,12 @@ export default function Option() {
   useEffect(() => {
     const id = user?.id ?? sessionStorage.getItem("user_id") ?? "";
     InfoSet(id);
-    
+
   }, [user?.name, user?.email]);
 
   const InfoSet = async (id) => {
     try {
       const res = await axios.get(`${BASE_URL}/users/userInfo/${id}`);
-      console.log("res", res);
       setInfo(res?.data);
     } catch (err) {
       console.error("회원정보 불러오기 실패", err);
@@ -64,11 +63,22 @@ export default function Option() {
     setEditForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
-    // 실제로는 API 호출(put/patch) 후 setInfo
-    setInfo({ ...editForm });
-    setEditModalOpen(false);
-    alert("수정되었습니다.")
+  const handleSubmit = async () => {
+    // 이름 값 유효성 검사
+    if (!editForm.name || editForm.name.trim() === "") {
+      alert("이름은 필수 입력 항목입니다.");
+      return;
+    }
+    
+    try {
+      const res = await axios.post(`${BASE_URL}/users/editUser`, editForm);
+      setInfo({ ...editForm });
+      setEditModalOpen(false);
+      alert("수정되었습니다.")
+    } catch (err) {
+      alert("회원정보 수정 실패");
+    }
+
   };
 
   // const LabelInput = ({ label, name, placeholder, }) => (
@@ -91,6 +101,9 @@ export default function Option() {
   //     />
   //   </Box>
   // );
+
+  const showValue = (val, fallback = "-") =>
+    val && val.toString().trim() !== "" ? val : fallback;
 
 
   return (
@@ -151,9 +164,9 @@ export default function Option() {
             <Box sx={{ display: "grid", gap: 1, p: '10px 10px 20px 10px' }}>
               <Typography sx={{ color: "#ffffffff" }}>이름</Typography>
               <Input label="이름" name="name" placeholder="이름"
-              disableUnderline
-              value={editForm.name ?? ""}
-              onChange={handleChange}
+                disableUnderline
+                value={editForm.name ?? ""}
+                onChange={handleChange}
                 sx={{
                   width: "100%",
                   bgcolor: "#fff",
@@ -163,10 +176,10 @@ export default function Option() {
                 }} />
               <Typography sx={{ color: "#ffffffff" }}>이메일</Typography>
               <Input label="이메일" name="email" placeholder="email@domain.com"
-              disableUnderline
-              disabled 
-              value={editForm.email ?? ""}
-              onChange={handleChange}
+                disableUnderline
+                disabled
+                value={editForm.email ?? ""}
+                onChange={handleChange}
                 sx={{
                   width: "100%",
                   bgcolor: "#fff",
@@ -177,9 +190,9 @@ export default function Option() {
               />
               <Typography sx={{ color: "#ffffffff" }}>연락처</Typography>
               <Input label="연락처" name="phone" placeholder="010-0000-0000"
-              disableUnderline
-              value={editForm.phone ?? ""}
-              onChange={handleChange}
+                disableUnderline
+                value={editForm.phone ?? ""}
+                onChange={handleChange}
                 sx={{
                   width: "100%",
                   bgcolor: "#fff",
@@ -190,9 +203,9 @@ export default function Option() {
               />
               <Typography sx={{ color: "#ffffffff" }}>회사</Typography>
               <Input label="회사" name="company" placeholder="회사명"
-              disableUnderline
-               value={editForm.company ?? ""}
-               onChange={handleChange}
+                disableUnderline
+                value={editForm.company ?? ""}
+                onChange={handleChange}
                 sx={{
                   width: "100%",
                   bgcolor: "#fff",
@@ -202,9 +215,9 @@ export default function Option() {
                 }} />
               <Typography sx={{ color: "#ffffffff" }}>부서</Typography>
               <Input label="부서" name="department" placeholder="부서명"
-              disableUnderline
-              value={editForm.department ?? ""}
-              onChange={handleChange}
+                disableUnderline
+                value={editForm.department ?? ""}
+                onChange={handleChange}
                 sx={{
                   width: "100%",
                   bgcolor: "#fff",
@@ -214,9 +227,9 @@ export default function Option() {
                 }} />
               <Typography sx={{ color: "#ffffffff" }}>직책</Typography>
               <Input label="직책" name="position" placeholder="직책"
-              disableUnderline
-              value={editForm.position ?? ""}
-              onChange={handleChange}
+                disableUnderline
+                value={editForm.position ?? ""}
+                onChange={handleChange}
                 sx={{
                   width: "100%",
                   bgcolor: "#fff",
@@ -265,12 +278,12 @@ export default function Option() {
               />
               <Divider orientation="vertical" sx={{ borderColor: "rgba(255, 255, 255, 0.58)", mr: 2 }} />
               <Box sx={{ color: "#fff", display: "grid", gap: 0.6, }}>
-                <Typography>이름: {info?.name ?? "-"}</Typography>
-                <Typography>이메일: {info?.email ?? "-"}</Typography>
-                <Typography>연락처: {info?.phone ?? "-"}</Typography>
-                <Typography>회사: {info?.company ?? "-"}</Typography>
-                <Typography>부서: {info?.department ?? "-"}</Typography>
-                <Typography>직책: {info?.position ?? "-"}</Typography>
+                <Typography>이름: {showValue(info?.name)}</Typography>
+                <Typography>이메일: {showValue(info?.email)}</Typography>
+                <Typography>연락처: {showValue(info?.phone)}</Typography>
+                <Typography>회사: {showValue(info?.company)}</Typography>
+                <Typography>부서: {showValue(info?.department)}</Typography>
+                <Typography>직책: {showValue(info?.position)}</Typography>
               </Box>
             </Box>
 

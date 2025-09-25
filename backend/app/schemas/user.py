@@ -20,3 +20,11 @@ class UserLogin(BaseModel):
 class UserPasswordReset(BaseModel):
     email: str = Field(..., description="가입된 이메일")
     password: str = Field(..., description="비밀번호")
+
+class UserEditForm(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100, description="이름")
+    email: EmailStr = Field(..., min_length=1, description="이메일")
+    phone: str | None = Field(None, max_length=20, description="전화번호")
+    company: str | None = Field(None, max_length=100, description="회사명")
+    department: str | None = Field(None, max_length=100, description="부서명")
+    position: str | None = Field(None, max_length=100, description="직급")
