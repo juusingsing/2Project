@@ -34,7 +34,8 @@ export default function IdFindResult() {
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'column', mt: 13, gap: 2 }}>
                         <Typography sx={{ color: '#ffffff' }}>아이디: {id || "-"}</Typography>
-                        <Typography sx={{ color: '#ffffff' }}>가입 일자: {createdAt || "-"}</Typography>
+                        <Typography sx={{ color: '#ffffff' }}>가입 일자: {createdAt?.match(/^\d{4}-\d{2}-\d{2}/)?.[0].replaceAll("-","-") || "-"}</Typography>
+                        
                     </Box>
                     <Box sx={{ display: 'flex', gap: 2, mt: '140px' }}>
 

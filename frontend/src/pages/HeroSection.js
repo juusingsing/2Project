@@ -24,7 +24,7 @@ export default function HeroSection() {
                         실시간 AI 분석으로 LEL 도달 전 자동 밸브 제어<br/>
                         누출을 ‘발생 전에’ 멈추는 방법
                     </Typography>
-                    <Box sx={{display:"flex", width:'360px', justifyContent:'center'}}>
+                    <Box sx={{display:"flex", width:'310px', justifyContent:'center'}}>
                     <Button 
                     sx={{
                         width: "160px", 
