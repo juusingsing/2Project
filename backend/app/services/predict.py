@@ -1,8 +1,7 @@
 from __future__ import annotations
 import os, math, datetime as dt
 from pathlib import Path
-from typing import Dict, List
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional, Literal
 
 import numpy as np
 import pandas as pd
@@ -29,10 +28,11 @@ DB_PORT = int(os.getenv("MYSQL_PORT", "3307"))
 
 TABLE_INPUT = "samples_wide"
 TABLE_OUTPUT = "predictions_wide"
-BATCH_SIZE = 3000
+BATCH_SIZE = 300
 
 SCALER_PATH = Path(os.getenv("SCALER_PATH", MODELS_DIR / "scaler_classification.pkl"))
 CLASSIFIER_PATH = Path(os.getenv("CLASSIFIER_PATH", MODELS_DIR / "lgbm_classifier.pkl"))
+
 REG_PATHS: Dict[int, Path] = {
     0: MODELS_DIR / "xgb_model_cls0.pkl",  # 에탄올
     1: MODELS_DIR / "xgb_model_cls1.pkl",  # 에틸렌
@@ -77,6 +77,7 @@ def load_artifacts():
     scaler = joblib.load(SCALER_PATH)
     clf = joblib.load(CLASSIFIER_PATH)
     regs: Dict[int, object] = {}
+    
     for k, p in REG_PATHS.items() :
         if p.exists():
             regs[k] = joblib.load(p)
@@ -138,81 +139,240 @@ def insert_predictions(engine: Engine, payload: List[dict]):
     with engine.begin() as conn:
         conn.execute(ins, payload)
 
-def run_prediction() -> dict:
+# 단건용
+def run_prediction_one() -> dict:
+    """
+    아직 예측 안 된 데이터 중 1건만 선택해서 예측 후 INSERT
+    (배치가 아니라 단건용)
+    """
     eng = get_engine()
     scaler, clf, regs = load_artifacts()
 
-    with eng.begin() as conn:
-        total = conn.execute(text(f"""
-            SELECT COUNT(*) FROM {TABLE_INPUT} s
-            LEFT JOIN {TABLE_OUTPUT} p ON p.sample_id = s.id
-            WHERE p.sample_id IS NULL
-        """)).scalar_one()
-
-    if total == 0:
+    # 아직 예측 안 된 id 1건만 가져오기
+    ids = select_unpredicted_ids(eng, offset=0, limit=1)
+    if not ids:
         return {"total": 0, "inserted": 0, "message": "no pending samples"}
-    
-    pages = math.ceil(total / BATCH_SIZE)
-    inserted = 0
 
-    for pi in range(pages):
-        ids = select_unpredicted_ids(eng, offset=pi * BATCH_SIZE, limit=BATCH_SIZE)
-        if not ids:
-            break
+    df = fetch_rows_by_ids(eng, ids)
+    if df.empty:
+        return {"total": 0, "inserted": 0, "message": "row not found"}
 
-        df = fetch_rows_by_ids(eng, ids)
-        if df.empty:
+    # ===== 배치와 동일하게 처리 =====
+    feats = pick_feature_cols(df)
+    X = df[feats].copy()
+    if X.isna().any().any():
+        X = X.fillna(X.median(numeric_only=True))
+
+    # 스케일링 + 분류
+    Xs = scaler.transform(X)
+    y_cls = clf.predict(Xs).astype(int)
+
+    # 클래스별 회귀
+    pred_ppm = np.full(len(y_cls), np.nan, dtype=float)
+    for cls_id, reg in regs.items():
+        idx = np.where(y_cls == cls_id)[0]
+        if idx.size == 0:
             continue
+        X_reg = Xs[idx] if USE_SCALED_FOR_REGRESSION else X.iloc[idx]
+        try:
+            pred_ppm[idx] = reg.predict(X_reg).astype(float)
+        except Exception:
+            pred_ppm[idx] = reg.predict(X.iloc[idx]).astype(float)
 
-        feats = pick_feature_cols(df)
-        X = df[feats].copy()
-        if X.isna().any().any():
-            X = X.fillna(X.median(numeric_only=True))
+    now = dt.datetime.now()
+    payload = []
+    for i, sid in enumerate(df["id"].astype(int).tolist()):
+        cls_id = int(y_cls[i])
+        gas_name = CLASS_NAME.get(cls_id, f"class_{cls_id}")
+        ppm = pred_ppm[i]
+        if np.isfinite(ppm):
+            lel_val, state = concentration_to_lel(gas_name, float(ppm))
+            ppm_out = float(round(ppm, 6))
+            lel_out = float(round(lel_val, 6))
+        else:
+            ppm_out, lel_out, state = (None, None, "ERROR")
 
-        # 스케일링 + 분류
-        Xs = scaler.transform(X)
-        y_cls = clf.predict(Xs).astype(int)
+        reg_path = REG_PATHS.get(cls_id)
+        model_version = reg_path.name if reg_path else None
 
-        # 클래스별 회귀
-        pred_ppm = np.full(len(y_cls), np.nan, dtype=float)
-        for cls_id, reg in regs.items():
-            idx = np.where(y_cls == cls_id)[0]
-            if idx.size == 0:
-                continue
-            X_reg = Xs[idx] if USE_SCALED_FOR_REGRESSION else X.iloc[idx]
-            try:
-                pred_ppm[idx] = reg.predict(X_reg).astype(float)
-            except Exception:
-                pred_ppm[idx] = reg.predict(X.iloc[idx]).astype(float)
+        payload.append({
+            "sample_id":      sid,
+            "pred_gas_class": gas_name,
+            "pred_gas_value": ppm_out,
+            "created_at":     now,
+            "state":          state,
+            "lel_value":      lel_out,
+            "model_version":  model_version,
+        })
 
-        now = dt.datetime.now()
-        payload = []
-        for i, sid in enumerate(df["id"].astype(int).tolist()):
-            cls_id = int(y_cls[i])
-            gas_name = CLASS_NAME.get(cls_id, f"class_{cls_id}")
-            ppm = pred_ppm[i]
-            if np.isfinite(ppm):
-                lel_val, state = concentration_to_lel(gas_name, float(ppm))
-                ppm_out = float(round(ppm, 6))
-                lel_out = float(round(lel_val, 6))
-            else:
-                ppm_out, lel_out, state = (None, None, "ERROR")
+    insert_predictions(eng, payload)
 
-            payload.append({
-                "sample_id":      sid,
-                "pred_gas_class": gas_name,
-                "pred_gas_value": ppm_out,
-                "created_at":     now,
-                "state":          state,
-                "lel_value":      lel_out,
-            })
+    return {
+        "total": 1,
+        "inserted": len(payload),
+        "row": payload[0],
+        "message": "ok"
+    }
 
-        insert_predictions(eng, payload)
-        inserted += len(payload)
 
-    return {"total": int(total), "inserted": int(inserted), "message": "ok"}
 
-def main():
-    result = run_prediction()
-    print(f"대상: {result['total']}, 적재: {result['inserted']}, msg={result['message']}")
+def predict_next_unpredicted() -> dict:
+    """
+    아직 예측 안 된 데이터 중 1건만 선택해서 예측 후 INSERT
+    """
+    eng = get_engine()
+    ids = select_unpredicted_ids(eng, offset=0, limit=1)
+    if not ids:
+        return {"inserted": 0, "row": None, "message": "no pending samples"}
+    return predict_one_by_id(int(ids[0]))
+
+
+#  ==== 전체실행 ====
+# def run_prediction() -> dict:
+#     eng = get_engine()
+#     scaler, clf, regs = load_artifacts()
+
+#     with eng.begin() as conn:
+#         total = conn.execute(text(f"""
+#             SELECT COUNT(*) FROM {TABLE_INPUT} s
+#             LEFT JOIN {TABLE_OUTPUT} p ON p.sample_id = s.id
+#             WHERE p.sample_id IS NULL
+#         """)).scalar_one()
+
+#     if total == 0:
+#         return {"total": 0, "inserted": 0, "message": "no pending samples"}
+    
+#     pages = math.ceil(total / BATCH_SIZE)
+#     inserted = 0
+
+#     for pi in range(pages):
+#         ids = select_unpredicted_ids(eng, offset=pi * BATCH_SIZE, limit=BATCH_SIZE)
+#         if not ids:
+#             break
+
+#         df = fetch_rows_by_ids(eng, ids)
+#         if df.empty:
+#             continue
+
+#         feats = pick_feature_cols(df)
+#         X = df[feats].copy()
+#         if X.isna().any().any():
+#             X = X.fillna(X.median(numeric_only=True))
+
+#         # 스케일링 + 분류
+#         Xs = scaler.transform(X)
+#         y_cls = clf.predict(Xs).astype(int)
+
+#         # 클래스별 회귀
+#         pred_ppm = np.full(len(y_cls), np.nan, dtype=float)
+#         for cls_id, reg in regs.items():
+#             idx = np.where(y_cls == cls_id)[0]
+#             if idx.size == 0:
+#                 continue
+#             X_reg = Xs[idx] if USE_SCALED_FOR_REGRESSION else X.iloc[idx]
+#             try:
+#                 pred_ppm[idx] = reg.predict(X_reg).astype(float)
+#             except Exception:
+#                 pred_ppm[idx] = reg.predict(X.iloc[idx]).astype(float)
+
+#         now = dt.datetime.now()
+#         payload = []
+#         for i, sid in enumerate(df["id"].astype(int).tolist()):
+#             cls_id = int(y_cls[i])
+#             gas_name = CLASS_NAME.get(cls_id, f"class_{cls_id}")
+#             ppm = pred_ppm[i]
+#             if np.isfinite(ppm):
+#                 lel_val, state = concentration_to_lel(gas_name, float(ppm))
+#                 ppm_out = float(round(ppm, 6))
+#                 lel_out = float(round(lel_val, 6))
+#             else:
+#                 ppm_out, lel_out, state = (None, None, "ERROR")
+
+#             payload.append({
+#                 "sample_id":      sid,
+#                 "pred_gas_class": gas_name,
+#                 "pred_gas_value": ppm_out,
+#                 "created_at":     now,
+#                 "state":          state,
+#                 "lel_value":      lel_out,
+#             })
+
+#         insert_predictions(eng, payload)
+#         inserted += len(payload)
+
+#     return {"total": int(total), "inserted": int(inserted), "message": "ok"}
+
+# def main():
+#     result = run_prediction()
+#     print(f"대상: {result['total']}, 적재: {result['inserted']}, msg={result['message']}")
+
+# '안전' 제외 로그 조회
+def query_logs(
+    gas: Optional[str],
+    states: Optional[List[Literal["주의","위험(차단)"]]] = None,
+    limit: int = 15,
+    order: Literal["desc", "asc"] = "desc",
+) -> List[dict]:
+    eng = get_engine()
+    where = ["state IN ('주의', '위험(차단)')"]
+    params = {"limit" : limit}
+
+    if gas:
+        where.append("pred_gas_class = :gas")
+        params["gas"] = gas
+
+    if states and len(states) > 0:
+        where.append("state IN :states")
+        params["states"] = tuple(states)
+
+    where_sql = " AND ".join(where)
+    order_sql = "DESC" if order.lower() == "desc" else "ASC"
+
+    q = text(f"""
+       SELECT id, sample_id, pred_gas_class, pred_gas_value, created_at, state, lel_value
+         FROM {TABLE_OUTPUT}
+        WHERE {where_sql}
+        ORDER BY created_at {order_sql}
+        LIMIT :limit OFFSET :offset
+    """)
+
+    qc = text(f"""
+        SELECT COUNT(*) AS c
+        FROM {TABLE_OUTPUT}
+        WHERE {where_sql}
+    """)
+
+    with eng.begin() as conn:
+        rows = conn.execute(q, params).mappings().all()
+        total = conn.execute(qc, params).scalar_one()
+
+    return int(total), [dict(r) for r in rows]
+
+
+def get_latest_predictions(limit: int = 15) -> List[Dict]:
+    """테이블에서 최신 N개 로그 (기본 15개)"""
+    eng = get_engine()
+    q = text(f"""
+        SELECT id, sample_id, pred_gas_class, pred_gas_value,
+               created_at, state, lel_value
+        FROM {TABLE_OUTPUT}
+        ORDER BY created_at DESC
+        LIMIT :limit
+    """)
+    with eng.begin() as conn:
+        rows = conn.execute(q, {"limit": limit}).mappings().all()
+    return [dict(r) for r in rows]
+
+
+def insert_predictions(engine: Engine, payload: List[dict]):
+    if not payload:
+        return
+    ins = text(f"""
+        INSERT INTO {TABLE_OUTPUT}
+            (sample_id, pred_gas_class, pred_gas_value, created_at, state, lel_value, model_version)
+        VALUES
+            (:sample_id, :pred_gas_class, :pred_gas_value, :created_at, :state, :lel_value, :model_version)
+    """)
+    with engine.begin() as conn:
+        conn.execute(ins, payload)
 
