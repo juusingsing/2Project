@@ -22,7 +22,8 @@ export default function MainLayout() {
     useEffect(() => closeMenu(), [location.pathname]);
 
     // name이 있으면 "이름님 환영합니다!", 없으면 "로그인"
-    const welcomeText = user.name ? `${user.name}님 환영합니다!` : "로그인";
+    const isLoggedIn = Boolean(user?.id || user?.name || user?.email);
+    const welcomeText = user.name ? `${user.name}님 환영합니다!` : "";
 
     return (
         <>
@@ -31,7 +32,9 @@ export default function MainLayout() {
                 onOpen={openMenu}
                 onClose={closeMenu}
                 onToggle={toggleMenu}
-                welcomeText={welcomeText}
+                welcomeText={`${user?.name ?? ""}님 환영합니다!`}
+                isLoggedIn={Boolean(user?.id)} 
+                onLoginClick={() => navigate("/login")}
             />
             <Box sx={{ height: `60px` }} />
             <Outlet context={{ user, setUser }} />

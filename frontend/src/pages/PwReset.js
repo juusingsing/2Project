@@ -30,7 +30,7 @@ export default function PwReset() {
         e.preventDefault();
         // 1. 비밀번호 공백
         if (!password?.trim()) {
-            alert("비밀번호를 작성해주세요.");
+            alert("비밀번호를 입력해주세요.");
             return;
         }
         // 2. 비밀번호 불일치
@@ -77,6 +77,7 @@ export default function PwReset() {
                     <Box sx={{ width: '400px', mt: '80px' }}>
                         <Typography color="#FFFFFF">비밀번호</Typography>
                         <Input disableUnderline
+                            type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             sx={{
@@ -95,6 +96,7 @@ export default function PwReset() {
                         <Typography color="#FFFFFF">비밀번호 확인</Typography>
                         <Input disableUnderline
                             value={passwordCheck}
+                            type="password"
                             onChange={(e) => setPasswordCheck(e.target.value)}
                             sx={{
                                 marginBlock: '10px',
