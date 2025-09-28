@@ -43,7 +43,7 @@ export default function IdFind() {
             })
             const result = res?.data?.result; // "verified" | "already verified"
             if (result === "verified" || result === "already verified") {
-                alert("이메일 인증 완료!");
+                alert("이메일 인증에 성공하였습니다.");
                 setDupEmailCheck(true);   // ✅ 최종 인증 통과
             } else {
                 alert("이메일 인증에 실패했습니다.");
@@ -59,7 +59,7 @@ export default function IdFind() {
     const idFindOut = async () => {
         // 1. 이메일 인증 안 됨
         if (!DupEmailCheck) {
-            alert("이메일을 인증해주세요.");
+            alert("이메일 인증을 해주세요.");
             return;
         }
 
@@ -72,7 +72,7 @@ export default function IdFind() {
         } catch (err) {
             console.error("아이디 불러오기 실패", err);
         }
-        alert("good");
+        // alert("good");
     }
 
     return (
@@ -120,7 +120,10 @@ export default function IdFind() {
                                 backgroundColor: "#001929",
                                 color: "#FFFFFF",
                                 borderRadius: '10px',
-                                fontWeight: '700'
+                                fontWeight: '700',
+                                "&.Mui-disabled":{
+                                    color:'#686868ff'
+                                }
                             }}>
                             이메일 인증
                         </Button>
@@ -160,13 +163,17 @@ export default function IdFind() {
                             인증 확인
                         </Button>
                         <Button
+                        disabled={!DupEmailCheck}
                             sx={{
                                 width: "70%",
                                 height: '40px',
                                 backgroundColor: "#001929",
                                 color: "#FFFFFF",
                                 borderRadius: '10px',
-                                fontWeight: '700'
+                                fontWeight: '700',
+                                "&.Mui-disabled":{
+                                    color:'#686868ff'
+                                }
                             }}
                             onClick={() => idFindOut()}>
                             아이디 찾기

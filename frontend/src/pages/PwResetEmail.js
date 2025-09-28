@@ -47,7 +47,7 @@ export default function PwResetEmail() {
             })
             const result = res?.data?.result; // "verified" | "already verified"
             if (result === "verified" || result === "already verified") {
-                alert("이메일 인증 완료!");
+                alert("이메일 인증에 성공하였습니다.");
                 setDupEmailCheck(true);   // ✅ 최종 인증 통과
             } else {
                 alert("이메일 인증에 실패했습니다.");
@@ -63,12 +63,12 @@ export default function PwResetEmail() {
     const pwReset = () => {
         // 1. 이메일 인증 안 됨
         if (!DupEmailCheck) {
-            alert("이메일을 인증해주세요.");
+            alert("이메일 인증을 해주세요.");
             return;
         }
 
         
-        alert("이메일 인증 성공!\n비밀번호 재설정 페이지로 이동합니다.");
+        // alert("이메일 인증 성공!\n비밀번호 재설정 페이지로 이동합니다.");
         navigate("/pwreset", { state: { email: email.trim() } });
 
     }
@@ -119,7 +119,10 @@ export default function PwResetEmail() {
                                 backgroundColor: "#001929",
                                 color: "#FFFFFF",
                                 borderRadius: '10px',
-                                fontWeight: '700'
+                                fontWeight: '700',
+                                "&.Mui-disabled":{
+                                    color:'#686868ff'
+                                }
                             }}>
                             이메일 인증
                         </Button>
@@ -153,7 +156,8 @@ export default function PwResetEmail() {
                                 color: "#001929",
                                 border: "3px solid #001929",
                                 borderRadius: '10px',
-                                fontWeight: '800'
+                                fontWeight: '800',
+                                
                             }}
                         >
                             인증 확인
@@ -166,7 +170,10 @@ export default function PwResetEmail() {
                                 backgroundColor: "#001929",
                                 color: "#FFFFFF",
                                 borderRadius: '10px',
-                                fontWeight: '700'
+                                fontWeight: '700',
+                                "&.Mui-disabled":{
+                                    color:'#686868ff'
+                                }
                             }}
                             onClick={() => pwReset()}>
                             비밀번호 재설정
