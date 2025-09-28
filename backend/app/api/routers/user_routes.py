@@ -38,11 +38,16 @@ def resetPassword_handler(user: UserPasswordReset, conn: Connection = Depends(ge
 
 @router.get("/idCheck/{id}")
 def idCheck_handler(id: str, conn: Connection = Depends(get_connection)):
-    return idCheck(conn, id)
+    try:
+        result = idCheck(conn, id)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
 
 
 @router.post("/login")
 def login(payload: UserLogin, conn: Connection = Depends(get_connection)):
+    print("Received payload:", payload)
     return login_user(conn, payload)
 
 

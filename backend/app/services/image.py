@@ -31,7 +31,7 @@ def pick_media_root() -> Path:
             raise FileNotFoundError(f"환경변수 MEDIA_ROOT 경로가 존재하지 않습니다: {p}")
 
     # 2) 윈도우 호스트 경로 (사용자 환경에 맞게 수정)
-    win_root = Path(r"C:\Users\human\Desktop\2pjfiles\videos")
+    win_root = Path("D:/2pjfiles/videos")
     if win_root.exists() and win_root.is_dir():
         print(f"[MEDIA] Using Windows path: {win_root}")
         return win_root
@@ -65,7 +65,7 @@ MEDIA_ROOT = pick_media_root()
 # ------------------------
 rgb_dir = MEDIA_ROOT / "RGB"
 thermal_dir = MEDIA_ROOT / "T"
-save_video = MEDIA_ROOT / "result" / "result_with_severity.mp4"
+save_video = MEDIA_ROOT / "result" / os.getenv("RESULT_NAME", "result_with_severity.mp4")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -117,11 +117,9 @@ def compute_gas_severity(gas_area, frame_area, alpha=0.7, beta=0.3):
 # ------------------------
 def draw_gas_gauge(frame, severity, max_val=0.02, bar_w=40, bar_h=200, margin=30):
     """
-    오른쪽에 세로 게이지 바 표시
+    오른쪽에 세로 게이지 바 표시 (색상 무조건 빨강)
     severity: 계산된 가스 심각도
     max_val: 게이지 최대 기준 (0.02 = 2%)
-    bar_w, bar_h: 게이지 크기
-    margin: 오른쪽 여백
     """
     H, W, _ = frame.shape
     x1, y1 = W - margin - bar_w, H//2 - bar_h//2
@@ -130,21 +128,13 @@ def draw_gas_gauge(frame, severity, max_val=0.02, bar_w=40, bar_h=200, margin=30
     # 외곽선
     cv2.rectangle(frame, (x1, y1), (x2, y2), (255,255,255), 2)
 
-    # 비율 클리핑
+    # 비율 계산
     ratio = min(severity / max_val, 1.0)
     fill_h = int(bar_h * ratio)
+
+    # 게이지 채우기 (무조건 빨강)
     fy1 = y2 - fill_h
-
-    # 색상 결정
-    if severity == 0:
-        color = (50,50,50)  # 회색 (없음)
-    elif severity < max_val * 0.5:
-        color = (0,255,255)  # 노랑 (조금)
-    else:
-        color = (0,0,255)    # 빨강 (많음)
-
-    # 게이지 채우기
-    cv2.rectangle(frame, (x1, fy1), (x2, y2), color, -1)
+    cv2.rectangle(frame, (x1, fy1), (x2, y2), (0, 0, 255), -1)
 
     # 텍스트 (퍼센트)
     cv2.putText(frame, f"{severity*100:.2f}%",
