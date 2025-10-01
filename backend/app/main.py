@@ -4,6 +4,9 @@ from app.api.routers.user_routes import router as user_router
 from app.api.routers.predict_routes import router as predict_router
 from app.api.routers.email_routes import router as email_router
 from app.api.routers.image_routes import router as image_router
+from app.api.routers.gas_stream_routes import router as gas_stream_router
+# 함수가져올용도
+from app.api.routers import gas_stream_routes
 
 from dotenv import load_dotenv
 import os
@@ -37,6 +40,8 @@ app.include_router(user_router, prefix="/users")
 app.include_router(predict_router, prefix="/pred")
 app.include_router(email_router, prefix="/email")
 app.include_router(image_router, prefix="/image")
+app.include_router(gas_stream_router, prefix="/stream")
+gas_stream_routes.register_notify_worker(app)
 
 @app.get("/")
 def index():

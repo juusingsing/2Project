@@ -8,7 +8,7 @@ router = APIRouter(prefix="", tags=["serve"])
 
 MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", "/data/videos"))  # 컨테이너 내부 기준
 # IMAGE_ENTRY = ["python", "-m", "app.services.image"]       # 너의 기존 모듈 실행
-IMAGE_ENTRY = ["python", "-m", "app.services.image2"]       # 너의 기존 모듈 실행
+IMAGE_ENTRY = ["python", "-m", "app.services.image"]       # 너의 기존 모듈 실행
 
 class ProcessReq(BaseModel):
     # 필요한 경우 확장: prefix, result_name 등
