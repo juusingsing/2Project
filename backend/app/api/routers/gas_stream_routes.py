@@ -7,32 +7,51 @@ router = APIRouter(prefix="", tags=["gas_stream"])
 clients = []  # 연결된 WebSocket 클라이언트
 
 # --------------------------
-# ✅ 추가: 전역 큐
+# 추가: 전역 큐
 # --------------------------
 notify_queue: asyncio.Queue = asyncio.Queue()
+block_states: dict[int, bool] = {}
 
 # --------------------------
 # WebSocket: 이벤트 알림
 # --------------------------
 @router.websocket("/events")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(ws: WebSocket):
     print(">>> WS 연결 시도 들어옴")
-    await websocket.accept()
-    clients.append(websocket)
-    await websocket.send_json({"msg": "connected!"})
+    await ws.accept()
+    clients.append(ws)
+    await ws.send_json({"msg": "connected!"})
+
+    # 수정됨: 현재 block_states 전송
+    for vid, state in block_states.items():
+        await ws.send_json({"video": vid, "blocking": state})
+
     try:
         while True:
-            await asyncio.sleep(1)
+            # 프론트에서 오는 메시지 처리
+            data = await ws.receive_json()
+            action = data.get("action")
+            video_id = data.get("video")
+
+            if action == "release":   # 해제 요청 처리
+                block_states[video_id] = False
+                notify_queue.put_nowait((video_id, False))
+
     except Exception as e:
         print("WS closed:", e)
-        clients.remove(websocket)
+        if ws in clients:
+            clients.remove(ws)
 
-async def notify_blocking(video_id: int):
+# --------------------------
+# 알림 브로드캐스트
+# --------------------------
+async def notify_blocking(video_id: int, state: bool):
+    print(f"🚨 notify_blocking: video={video_id}, state={state}")
     """차단 이벤트 브로드캐스트"""
     living = []
     for ws in clients:
         try:
-            await ws.send_json({"video": video_id, "blocking": True})
+            await ws.send_json({"video": video_id, "blocking": state})
             living.append(ws)
         except:
             pass
@@ -40,25 +59,26 @@ async def notify_blocking(video_id: int):
 
 async def notify_worker():
     while True:
-        video_id = await notify_queue.get()
-        await notify_blocking(video_id)
+        video_id, state = await notify_queue.get()
+        await notify_blocking(video_id, state)
 
 # --------------------------
 # 영상 프레임 제너레이터
 # --------------------------
 def frame_generator(video_id: int, path: str):
+    global block_states
+
     cap = cv2.VideoCapture(path)
-    fps = cap.get(cv2.CAP_PROP_FPS) or 30   # 영상 FPS (기본 30)
+    fps = cap.get(cv2.CAP_PROP_FPS) or 30
     delay = 1 / fps
 
-    block_triggered, block_time = False, None
-    PIXEL_THRESHOLD_RATIO = 0.001
-    BLOCK_DURATION = 5
+    # 처음 시작 시 상태 초기화
+    if video_id not in block_states:
+        block_states[video_id] = False
 
-    while True:  # 무한 루프
+    while True:
         ret, frame = cap.read()
         if not ret:
-            # 영상 끝났으면 처음으로 되돌리기
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             continue
 
@@ -70,28 +90,25 @@ def frame_generator(video_id: int, path: str):
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
         green_ratio = cv2.countNonZero(mask) / (frame.shape[0] * frame.shape[1])
-        gas_detected = green_ratio > PIXEL_THRESHOLD_RATIO
+        gas_detected = green_ratio > 0.001
 
-        if gas_detected and not block_triggered:
-            block_triggered, block_time = True, time.time()
-            # asyncio.run(notify_blocking(video_id))
-            notify_queue.put_nowait(video_id)
+        # --- 상태 변화 체크 ---
+        if gas_detected and not block_states[video_id]:
+            block_states[video_id] = True
+            notify_queue.put_nowait((video_id, True))  # 감지 시 True 알림
 
-        if block_triggered and block_time and (time.time() - block_time > BLOCK_DURATION):
-            block_triggered = False
-
+        # --- 화면 표시 ---
         if gas_detected:
             cv2.putText(frame, "Gas Detected!", (330, 50),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
-        if block_triggered:
+        if block_states[video_id]:
             cv2.putText(frame, "Blocking Activated", (330, 100),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,255), 2)
 
         _, jpeg = cv2.imencode(".jpg", frame)
         yield (b"--frame\r\n"
                b"Content-Type: image/jpeg\r\n\r\n" + jpeg.tobytes() + b"\r\n")
-        
-        # --- FPS 맞추기 ---
+
         time.sleep(delay)
 
 
