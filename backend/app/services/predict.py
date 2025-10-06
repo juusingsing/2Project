@@ -51,7 +51,7 @@ CLASS_NAME = {
     5: "톨루엔", 
 }
 
-GAS_LEL = {
+GAS_LEL = {                               # 하한 폭팔 농도
     "에탄올": [33000, 3.3],
     "에틸렌": [27000, 2.7],
     "암모니아": [150000, 15.0],
@@ -137,6 +137,49 @@ def insert_predictions(engine: Engine, payload: List[dict]):
     """)
     with engine.begin() as conn:
         conn.execute(ins, payload)
+
+
+def search_alert_logs(
+    engine: Engine, 
+    gas_class: str | None, 
+    specific_state: str | None, 
+    offset: int, 
+    limit: int
+) -> pd.DataFrame:
+    """
+    기본적으로 '안전' 상태를 제외한 로그에서, 
+    가스 종류와 특정 상태를 기준으로 필터링하여 조회하는 통합 함수
+    """
+    
+    q_base = f"SELECT * FROM {TABLE_OUTPUT}"
+    conditions = []
+    params: Dict[str, object] = {"limit": limit, "offset": offset}
+    
+    # '안전' 상태 제외
+    conditions.append("state != '안전'")
+    
+    # 가스 종류 필터링
+    if gas_class:
+        conditions.append("pred_gas_class = :gas_class")
+        params["gas_class"] = gas_class
+        
+    # 상태 필터링
+    if specific_state:
+        conditions.append("state = :specific_state")
+        params["specific_state"] = specific_state
+    
+    where_clause = " WHERE " + " AND ".join(conditions)
+    
+    q_final = f"""
+        {q_base}
+        {where_clause}
+        ORDER BY created_at DESC, sample_id DESC
+        LIMIT :limit OFFSET :offset
+    """
+    
+    return pd.read_sql(text(q_final), con=engine, params=params)
+
+
 
 def run_prediction() -> dict:
     eng = get_engine()

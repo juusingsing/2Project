@@ -1,17 +1,35 @@
 # app/api/routers/predict_routes.py
 
 from __future__ import annotations
-
 from fastapi import APIRouter, BackgroundTasks, Query, HTTPException
-from typing import List
+from typing import List, Optional
+from pydantic import BaseModel
+from datetime import datetime
+
+# 'rows' 리스트 안의 개별 로그 항목에 대한 모델
+class AlertLogEntry(BaseModel):
+    sample_id: int
+    pred_gas_class: str
+    pred_gas_value: Optional[float]
+    created_at: datetime
+    state: str
+    lel_value: Optional[float]
+
+# API 전체 응답 구조에 대한 모델
+class AlertLogsResponse(BaseModel):
+    rows: List[AlertLogEntry]
+    count: int
+    limit: int
+    offset: int
 
 from app.services.predict import (
-    run_prediction,
-    load_artifacts,
-    get_engine,
-    select_unpredicted_ids,
-    fetch_rows_by_ids,
-    concentration_to_lel,
+    run_prediction,         # 예측 실행 함수
+    load_artifacts,         # 모델 로드 함수
+    get_engine,             # DB 엔진 생성 함수
+    select_unpredicted_ids, # 미예측 ID 조회 함수
+    fetch_rows_by_ids,      # ID 기반 데이터 조회 함수
+    concentration_to_lel,   # LEL 변환 함수
+    search_alert_logs,      # 로그 함수
 )
 
 router = APIRouter(prefix="", tags=["pred"])
@@ -98,3 +116,52 @@ def lel_check(gas: str, ppm: float = Query(..., ge=0.0)):
         return {"gas": gas, "ppm": ppm, "lel_value": lel_val, "state": state}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"invalid input: {e}")
+
+
+
+@router.get("/alert-logs", response_model=AlertLogsResponse)
+def alert_logs(limit: int = Query(10, ge=1, le=1000), offset: int = Query(0, ge=0)):
+    """(화면 초기 로딩용) '안전' 상태를 제외한 모든 예측 로그 조회"""
+    try:
+        eng = get_engine()
+        
+        # search_alert_logs를 필터 없이 호출 (DB 함수 내 기본 조건: state != '안전'만 적용됨)
+        df = search_alert_logs(
+            eng, 
+            gas_class=None,         
+            specific_state=None,    
+            offset=offset, 
+            limit=limit
+        ) 
+        
+        rows = df.to_dict(orient="records")
+        return {"rows": rows, "count": len(rows), "limit": limit, "offset": offset}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"db query error for alert logs: {e}")
+    
+@router.get("/search-logs", response_model=AlertLogsResponse)
+def search_logs(
+    gas_class: str | None = Query(None, description="토글 버튼으로 선택된 가스 종류"),
+    specific_state: str | None = Query(None, description="토글 버튼으로 선택된 상태 (주의, 위험(차단))"), 
+    limit: int = Query(10, ge=1, le=1000), 
+    offset: int = Query(0, ge=0)
+):
+    """
+    (토글 필터 적용용) '안전'을 제외한 로그에서 가스 종류 및 특정 상태를 기준으로 검색
+    """
+    try:
+        eng = get_engine()
+        
+        # 토글 버튼으로 전달된 필터를 search_alert_logs에 적용
+        df = search_alert_logs(
+            eng, 
+            gas_class=gas_class, 
+            specific_state=specific_state, 
+            offset=offset, 
+            limit=limit
+        ) 
+        
+        rows = df.to_dict(orient="records")
+        return {"rows": rows, "count": len(rows), "limit": limit, "offset": offset}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"db query error for search logs: {e}")
