@@ -1,3 +1,4 @@
+
 # app/api/routers/predict_routes.py
 
 from __future__ import annotations
@@ -5,6 +6,17 @@ from fastapi import APIRouter, BackgroundTasks, Query, HTTPException
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
+import json
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def df_to_records_safe(df: pd.DataFrame) -> list[dict]:
+    # NaN -> null, datetime -> ISO
+    js = df.to_json(orient="records", date_format="iso")
+    return json.loads(js)
+
 
 # 'rows' 리스트 안의 개별 로그 항목에 대한 모델
 class AlertLogEntry(BaseModel):
@@ -134,9 +146,23 @@ def alert_logs(limit: int = Query(10, ge=1, le=1000), offset: int = Query(0, ge=
             limit=limit
         ) 
         
-        rows = df.to_dict(orient="records")
-        return {"rows": rows, "count": len(rows), "limit": limit, "offset": offset}
+        logger.info("[alert-logs] dtypes=\n%s", df.dtypes)
+        logger.info("[alert-logs] head=\n%s", df.head(3))
+        
+        try:
+            rows = df_to_records_safe(df)   # ← 반드시 이 함수 사용!
+        except Exception as conv_err:
+            logger.exception("[alert-logs] df_to_records_safe 실패: %r", conv_err)
+            # 문제되는 레코드 후보 한 줄 출력
+            logger.error("[alert-logs] sample row raw dict=%s", df.head(1).to_dict(orient="records"))
+            raise
+
+        resp = {"rows": rows, "count": len(rows), "limit": limit, "offset": offset}
+        logger.info("[alert-logs] response sample=%s", resp["rows"][:1])
+        return resp
+
     except Exception as e:
+        logger.exception("[alert-logs] 최종 예외")
         raise HTTPException(status_code=500, detail=f"db query error for alert logs: {e}")
     
 @router.get("/search-logs", response_model=AlertLogsResponse)
@@ -161,7 +187,10 @@ def search_logs(
             limit=limit
         ) 
         
-        rows = df.to_dict(orient="records")
+        rows = df_to_records_safe(df)
         return {"rows": rows, "count": len(rows), "limit": limit, "offset": offset}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"db query error for search logs: {e}")
+
+
+
