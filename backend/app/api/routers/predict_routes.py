@@ -2,8 +2,8 @@
 # app/api/routers/predict_routes.py
 
 from __future__ import annotations
-from fastapi import APIRouter, BackgroundTasks, Query, HTTPException
-from typing import List, Optional
+from fastapi import APIRouter, BackgroundTasks, Query, HTTPException, Body
+from typing import List, Optional, Literal
 from pydantic import BaseModel
 from datetime import datetime
 import json
@@ -150,7 +150,7 @@ def alert_logs(limit: int = Query(10, ge=1, le=1000), offset: int = Query(0, ge=
         logger.info("[alert-logs] head=\n%s", df.head(3))
         
         try:
-            rows = df_to_records_safe(df)   # ← 반드시 이 함수 사용!
+            rows = df_to_records_safe(df)  
         except Exception as conv_err:
             logger.exception("[alert-logs] df_to_records_safe 실패: %r", conv_err)
             # 문제되는 레코드 후보 한 줄 출력
@@ -193,4 +193,27 @@ def search_logs(
         raise HTTPException(status_code=500, detail=f"db query error for search logs: {e}")
 
 
+CONTROL_STATE = {
+    "mode": "auto",          # "auto" | "manual"
+    "valve": "open",         # "open(해제)" | "closed(잠김)"
+}
 
+
+@router.get("/control/state")
+def get_control_state():
+    return CONTROL_STATE
+
+@router.post("/control/mode")
+def set_mode(mode: Literal["auto","manual"] = Body(..., embed=True)):
+    CONTROL_STATE["mode"] = mode
+    # 자동으로 바꾸면 즉시 해제(열기)로 간주하여 재개되도록
+    if mode == "auto":
+        CONTROL_STATE["valve"] = "open"
+    return CONTROL_STATE
+
+@router.post("/control/valve")
+def set_valve(action: Literal["lock","unlock"] = Body(..., embed=True)):
+    # 수동 모드에서만 의미 있게 동작(자동이면 항상 open으로 유지)
+    if CONTROL_STATE["mode"] == "manual":
+        CONTROL_STATE["valve"] = "closed" if action == "lock" else "open"
+    return CONTROL_STATE

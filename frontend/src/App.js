@@ -8,7 +8,7 @@ import IdFindResult from "./pages/IdFindResult";
 import PwResetId from "./pages/PwResetId";
 import PwReset from "./pages/PwReset";
 import PwResetEmail from "./pages/PwResetEmail";
-import Main from "./pages/Main";
+import Main from "./pages/main";
 import Sensor from "./pages/Sensor";
 import Video from "./pages/Video";
 

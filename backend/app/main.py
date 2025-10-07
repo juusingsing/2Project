@@ -18,6 +18,19 @@ app = FastAPI(
     redoc_url=None,
 )
 
+# ✅ 개발용 CORS 허용
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://192.168.0.107:3000",  # 같은 LAN 클라이언트
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # 도커 nginx에 CORS설정있어서 주석처리   중복설정X
 # origins = [
 #     "http://localhost:3000",
