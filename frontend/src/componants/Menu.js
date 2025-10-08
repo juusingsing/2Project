@@ -8,7 +8,6 @@ export default function BottomMenu({ open, onClose, onSelect }) {
         { key: "home", label: "홈", path: "/main" },
         { key: "sensor", label: "센서", path: "/sensor" },
         { key: "video", label: "영상", path: "/video" },
-        { key: "menu3", label: "메뉴3", path: "/menu3" },
     ];
     const bottomItems = [
         { key: "alert", label: "알림", path: "/alert" },
@@ -94,7 +93,7 @@ export default function BottomMenu({ open, onClose, onSelect }) {
                     })}
                 </List>
             </Box>
-            <Box sx={{ p: 4, marginTop: 40 }}>
+            <Box sx={{ p: 4, marginTop: 48 }}>
                 <List >
                     {bottomItems.map((bit) => {
                         const selected = isActive(bit.path);
