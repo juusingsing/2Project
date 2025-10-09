@@ -1,26 +1,20 @@
 // src/pages/Sensor.js
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useCallback,
-} from "react";
-import { Box, Typography, Stack, Paper, Button, Chip } from "@mui/material";
+import React, {  useEffect,  useMemo,  useRef,  useState,  useCallback,} from "react";
+import { Box, Typography, Stack, Paper, Button, Chip,  FormControl, Select, MenuItem } from "@mui/material";
 import ModeToggle from "../componants/Toggle.js";
 import axios from "axios";
 
 export default function Sensor() {
-  // 0) 환경설정
+  // 환경설정
   const RAW_BASE = process.env.REACT_APP_BASE_URL ?? "http://localhost:8000";
   const BASE_URL = RAW_BASE.replace(/\/+$/, "");
   const BASE_WITH_PRED = /\/pred($|\/)/.test(BASE_URL) ? BASE_URL : `${BASE_URL}/pred`;
   const api = useMemo(() => axios.create({ baseURL: BASE_WITH_PRED }), [BASE_WITH_PRED]);
 
-  // 1) 상태
+  // 상태
   const MAX_VISIBLE = 15;
-  const [mode, setMode] = useState("auto");   // "auto" | "manual"
-  const [valve, setValve] = useState("open"); // "open" | "closed"
+  const [mode, setMode] = useState("auto");   // 자동/수동 모드
+  const [valve, setValve] = useState("open"); // 밸브 열림/닫힘 상태
   const [logs, setLogs] = useState([]);       // 화면에 보이는 15개
   const bufferRef = useRef([]);               // 서버에서 가져온 최신 로그 버퍼 (FIFO)
   const seenRef = useRef(new Set());          // 중복 방지 키 저장
@@ -30,7 +24,33 @@ export default function Sensor() {
   const nextOffsetRef = useRef(15);     // 다음 과거 페이지 offset (초기값)
   const noMoreOlderRef = useRef(false); // 과거 더 없음 플래그
 
-  // === 상태 칩 색상 ===
+  // 필터 옵션 (로그에서 동적 추출, 없으면 기본 후보)
+  const [filterGas, setFilterGas] = useState("ALL");
+  const [filterState, setFilterState] = useState("ALL");
+  // 화면에서 항상 보여줄 가스 전체 목록
+  const GAS_CATALOG = ["에탄올","에틸렌","암모니아","아세트알데히드","아세톤","톨루엔"];
+
+  const gasOptions = useMemo(() => {
+    const fromLogs = Array.from(new Set(logs.map(v => v?.pred_gas_class).filter(Boolean)));
+    return Array.from(new Set([...GAS_CATALOG, ...fromLogs]));
+  }, [logs]);
+
+  const stateOptions = ["주의", "위험"];
+
+  // 화면 표시용 필터 결과
+  const filteredLogs = useMemo(() => {
+    return logs.filter(r => {
+      const gOk = filterGas === "ALL" || r.pred_gas_class === filterGas;
+      const sOk =
+        filterState === "ALL" ||
+        (r.state && (filterState === "위험" ? r.state.startsWith("위험") : r.state === "주의"));
+      return gOk && sOk;
+    });
+  }, [logs, filterGas, filterState]);
+
+
+
+  // 상태 색상 
   const stateChipSx = (state) => {
     if (state === "주의") return { backgroundColor: "#FFEB3B", color: "#000", fontWeight: 700 };      // 노란색
     if (state?.startsWith("위험")) return { backgroundColor: "#FF9800", color: "#000", fontWeight: 700 }; // 주황색
@@ -38,11 +58,10 @@ export default function Sensor() {
   };
 
   
-  // 2) 유틸
+  // 로그 고유키 생성(중복 체크용)
   const keyOf = useCallback((r) => `${r.sample_id}-${r.created_at}`, []);
 
   const pruneSeen = useCallback(() => {
-    // seen 키가 너무 커지지 않게 주기적으로 절제
     const LIMIT = 4000;
     const DROP = 1000;
     const s = seenRef.current;
@@ -81,7 +100,7 @@ export default function Sensor() {
     }
   }, [keyOf, pruneSeen]);
 
-  // ✅ 과거 페이지 페치
+  // 과거 페이지 패치
   const fetchOlderOnce = useCallback(async () => {
     if (noMoreOlderRef.current) return;
     try {
@@ -116,7 +135,7 @@ export default function Sensor() {
     bufferRef.current = buf;
     setLogs((prev) => [next, ...prev].slice(0, MAX_VISIBLE));
 
-    // 버퍼가 얕아지면(3개 이하 남으면) 과거 페이지 미리 채우기
+    // 버퍼가 3개 이하 남으면 과거 페이지 미리 채우기
     if (bufferRef.current.length < 3) {
       fetchOlderOnce();
     }
@@ -127,7 +146,7 @@ export default function Sensor() {
     [mode, valve]
   );
 
-  // 3) 초기 제어 상태(선택 기능: 백엔드에 없으면 무시)
+  // 초기 제어 상태(선택 기능: 백엔드에 없으면 무시)
   useEffect(() => {
     (async () => {
       try {
@@ -135,12 +154,12 @@ export default function Sensor() {
         if (data?.mode) setMode(data.mode);
         if (data?.valve) setValve(data.valve);
       } catch {
-        // 제어 API가 아직 없다면 조용히 무시
+        
       }
     })();
   }, [api]);
 
-  // 4) 서버 폴링 — 1초마다 최신 15개 받아 버퍼 적재
+  // 서버 폴링 — 1초마다 최신 15개 받아 버퍼 적재
   useEffect(() => {
     const fetchLatest = async () => {
       try {
@@ -159,12 +178,12 @@ export default function Sensor() {
     };
   }, [api, pushToBuffer]);
 
-  // 5) 디큐 타이머 — 1초에 한 줄씩 화면에 쌓기 (모드/밸브에 따라 on/off)
+  // 디큐 타이머 — 1초에 한 줄씩 화면에 쌓기 (모드/밸브에 따라 on/off)
   useEffect(() => {
     
     const on = shouldDequeue();
     if (on && !dequeueTimerRef.current) {
-      dequeueOnce(); // UX 좋게 즉시 1개
+      dequeueOnce(); 
       dequeueTimerRef.current = setInterval(dequeueOnce, 1000);
     } else if (!on && dequeueTimerRef.current) {
       clearInterval(dequeueTimerRef.current);
@@ -178,7 +197,7 @@ export default function Sensor() {
     };
   }, [shouldDequeue, dequeueOnce]);
 
-  // 6) 제어 핸들러(선택 기능: 백엔드 있으면 연동)
+  // 제어 핸들러(선택 기능: 백엔드 있으면 연동)
   const handleModeChange = async (next) => {
     setMode(next);
     try {
@@ -210,12 +229,11 @@ export default function Sensor() {
     }
   };
 
-  // 7) 표시용 파생값
   const isManual = mode === "manual";
   const currStateText = valve === "closed" ? "닫힘" : "해제";
   const currStateChip = valve === "closed" ? "잠김" : "열림";
 
-
+  // 랜더링
   return (
     <Box sx={{ width: "100%", minHeight: "100vh", display: "flex", backgroundColor: "#92a5b6ff" }}>
       <Box>
@@ -309,6 +327,26 @@ export default function Sensor() {
           <Paper sx={{ width: "90%", mt: 3, borderRadius: "15px", mx: "auto", p: 2 }}>
             <Box sx={{ p: "0 20px 10px" }}>
               <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>예측 로그</Typography>
+              <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end", alignItems: "center" }}>
+                {/* 가스 종류 필터 */}
+                <FormControl size="small" sx={{ minWidth: 120 }}>
+                  <Select value={filterGas} onChange={(e)=>setFilterGas(e.target.value)} displayEmpty>
+                    <MenuItem value="ALL">가스 종류</MenuItem>
+                    {gasOptions.map(g => (<MenuItem key={g} value={g}>{g}</MenuItem>))}
+                  </Select>
+                </FormControl>
+                {/* 상태 필터 */}
+                <FormControl size="small" sx={{ minWidth: 100 }}>
+                  <Select value={filterState} onChange={(e)=>setFilterState(e.target.value)} displayEmpty>
+                    <MenuItem value="ALL">상태</MenuItem>
+                    {stateOptions.map(s => (<MenuItem key={s} value={s}>{s}</MenuItem>))}
+                  </Select>
+                </FormControl>
+                {/* 초기화(선택사항) */}
+                <Button onClick={()=>{setFilterGas("ALL"); setFilterState("ALL");}} sx={{ height: 36 }}>
+                  초기화
+                </Button>
+              </Box>
             </Box>
             <Box sx={{ display: "grid", gap: 1 }}>
               <Paper
@@ -321,7 +359,7 @@ export default function Sensor() {
                   fontWeight: 700,
                   borderRadius: "10px",
                   gap: 8,
-                  alignItems: "center", // 행 내부 수직 가운데
+                  alignItems: "center", 
                 }}
               >
                 <span style={{ textAlign: "center" }}>시간</span>
@@ -331,15 +369,15 @@ export default function Sensor() {
                 <span style={{ textAlign: "center" }}>상태</span>
               </Paper>
 
-              {logs.map((r, i) => (
+              {filteredLogs.map((r, i) => (
                 <Paper
                   key={`${r.sample_id}-${r.created_at}-${i}`}
                   sx={{
                     p: 1.5,
                     display: "grid",
-                    gridTemplateColumns: "200px 1fr 110px 120px 130px", // 시간 / 가스 / 예측값 / LEL / 상태
+                    gridTemplateColumns: "200px 1fr 110px 120px 130px", 
                     gap: 8,
-                    alignItems: "center", // 행 내부 수직 가운데
+                    alignItems: "center", 
                   }}
                 >
                   <span style={{ textAlign: "center" }}>{new Date(r.created_at).toLocaleString()}</span>

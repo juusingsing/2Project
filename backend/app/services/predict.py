@@ -11,7 +11,6 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 
 
-# === 새로 추가: 학습 시점 피처 정렬 유틸 ===
 def _get_feat_names(obj):
     """sklearn 계열 모델/스케일러의 feature_names_in_을 안전하게 꺼낸다."""
     return getattr(obj, "feature_names_in_", None)
@@ -204,7 +203,7 @@ def run_prediction() -> dict:
     eng = get_engine()
     scaler, clf, regs = load_artifacts()
 
-    # --- 미예측 샘플 개수 조회 ---
+    # 미예측 샘플 개수 조회 
     with eng.begin() as conn:
         total = conn.execute(text(f"""
             SELECT COUNT(*) FROM {TABLE_INPUT} s
@@ -218,7 +217,7 @@ def run_prediction() -> dict:
     pages = math.ceil(total / BATCH_SIZE)
     inserted = 0
 
-    # --- 페이지 단위 예측 ---
+    #  페이지 단위 예측 
     for pi in range(pages):
         ids = select_unpredicted_ids(eng, offset=pi * BATCH_SIZE, limit=BATCH_SIZE)
         if not ids:
@@ -228,9 +227,7 @@ def run_prediction() -> dict:
         if df.empty:
             continue
 
-        # -------------------------------
-        # (1) 피처 선택 및 정렬
-        # -------------------------------
+        # 1. 피처 선택 및 정렬 
         feats_base = pick_feature_cols(df)
         X_raw = df[feats_base].copy()
 
@@ -243,15 +240,11 @@ def run_prediction() -> dict:
         if X_raw.isna().any().any():
             X_raw = X_raw.fillna(X_raw.median(numeric_only=True))
 
-        # -------------------------------
-        # (2) 분류 예측
-        # -------------------------------
+        # 2. 분류 예측 
         Xs = scaler.transform(X_raw)
         y_cls = clf.predict(Xs).astype(int)
 
-        # -------------------------------
-        # (3) 클래스별 회귀 예측
-        # -------------------------------
+        # 3. 클래스별 회귀 예측 
         pred_ppm = np.full(len(y_cls), np.nan, dtype=float)
 
         for cls_id in np.unique(y_cls):
@@ -308,9 +301,7 @@ def run_prediction() -> dict:
                 print(f"[predict] class {cls_id}: ALL attempts failed; "
                       f"nfi={nfi}, raw={X_raw_aligned.shape[1]}, scaled={X_scaled_aligned.shape[1]}")
 
-        # -------------------------------
-        # (4) 결과 변환 및 적재
-        # -------------------------------
+        # 4. 결과 변환 및 적재 
         now = dt.datetime.now()
         payload = []
 
@@ -340,8 +331,6 @@ def run_prediction() -> dict:
         inserted += len(payload)
 
     return {"total": int(total), "inserted": int(inserted), "message": "ok"}
-
-
 
 def main():
     result = run_prediction()
