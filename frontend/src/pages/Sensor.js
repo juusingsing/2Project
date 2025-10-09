@@ -161,6 +161,7 @@ export default function Sensor() {
 
   // 5) 디큐 타이머 — 1초에 한 줄씩 화면에 쌓기 (모드/밸브에 따라 on/off)
   useEffect(() => {
+    
     const on = shouldDequeue();
     if (on && !dequeueTimerRef.current) {
       dequeueOnce(); // UX 좋게 즉시 1개
@@ -234,7 +235,7 @@ export default function Sensor() {
 
             <Paper sx={{ width: "27%", backgroundColor: "#41515B", borderRadius: "25px" }}>
               <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px" }}>LEL</Typography>
-              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1, mt: "35px" }}>
+              <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1, mt: "50px" }}>
                 <Typography sx={{ color: "#FFFFFF", m: 0, fontSize: "30px", lineHeight: 1, textAlign: "center" }}>
                   {logs[0]?.lel_value != null ? Number(logs[0].lel_value).toFixed(3) : "수치"}
                 </Typography>
@@ -242,12 +243,13 @@ export default function Sensor() {
               </Box>
             </Paper>
 
-            <Paper sx={{ width: "27%", backgroundColor: "#41515B", borderRadius: "25px" }}>
-              <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px" }}>상태</Typography>
-              <Typography sx={{ textAlign: "center", color: "#FFFFFF", mt: "50px", fontSize: "30px" }}>
+            <Paper sx={{ width: "27%", height: "220px", borderRadius: "25px", textAlign: "center", ...(stateChipSx(logs[0]?.state) ?? { backgroundColor: "#41515B", color: "#FFFFFF" }) }}>
+              <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px", textAlign: "left" }}>상태</Typography>
+              <Typography sx={{ mt: "50px", fontSize: "30px", fontWeight: 700, color: logs[0]?.state === "주의" ? "#000" : logs[0]?.state?.startsWith("위험") ? "#000" : "#FFFFFF" }}>
                 {logs[0]?.state ?? "상태"}
               </Typography>
             </Paper>
+
           </Stack>
 
           {/* 벨브 제어 */}
