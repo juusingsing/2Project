@@ -19,7 +19,10 @@ export default function Login() {
             const res = await axios.post(`${BASE_URL}/users/login`, {
                 user_id: id,
                 password: password,
-            });
+            }, {
+                headers: { "Content-Type": "application/json" }
+            }
+            );
             const result = res?.data?.result; // "exists" | "not exists"
             sessionStorage.setItem("user_id", res?.data?.user?.user_id);
             sessionStorage.setItem("name", res?.data?.user?.name);
