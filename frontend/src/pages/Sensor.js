@@ -19,7 +19,7 @@ export default function Sensor() {
   const bufferRef = useRef([]);               // 서버에서 가져온 최신 로그 버퍼 (FIFO)
   const seenRef = useRef(new Set());          // 중복 방지 키 저장
   const fetchTimerRef = useRef(null);         // 서버 폴링 타이머(2초)
-  const dequeueTimerRef = useRef(null);       // 디큐 타이머(1초)
+  // const dequeueTimerRef = useRef(null);       // 디큐 타이머(1초)
 
   const nextOffsetRef = useRef(15);     // 다음 과거 페이지 offset (초기값)
   const noMoreOlderRef = useRef(false); // 과거 더 없음 플래그
@@ -180,23 +180,33 @@ export default function Sensor() {
   }, [api, pushToBuffer]);
 
   // 디큐 타이머 — 1초에 한 줄씩 화면에 쌓기 (모드/밸브에 따라 on/off)
-  useEffect(() => {
+  // useEffect(() => {
 
-    const on = shouldDequeue();
-    if (on && !dequeueTimerRef.current) {
-      dequeueOnce();
-      dequeueTimerRef.current = setInterval(dequeueOnce, 1000);
-    } else if (!on && dequeueTimerRef.current) {
-      clearInterval(dequeueTimerRef.current);
-      dequeueTimerRef.current = null;
-    }
-    return () => {
-      if (dequeueTimerRef.current) {
-        clearInterval(dequeueTimerRef.current);
-        dequeueTimerRef.current = null;
-      }
-    };
-  }, [shouldDequeue, dequeueOnce]);
+  //   const on = shouldDequeue();
+  //   if (on && !dequeueTimerRef.current) {
+  //     dequeueOnce();
+  //     dequeueTimerRef.current = setInterval(dequeueOnce, 1000);
+  //   } else if (!on && dequeueTimerRef.current) {
+  //     clearInterval(dequeueTimerRef.current);
+  //     dequeueTimerRef.current = null;
+  //   }
+  //   return () => {
+  //     if (dequeueTimerRef.current) {
+  //       clearInterval(dequeueTimerRef.current);
+  //       dequeueTimerRef.current = null;
+  //     }
+  //   };
+  // }, [shouldDequeue, dequeueOnce]);
+
+useEffect(() => {
+   const id = setInterval(() => {
+     if (shouldDequeue()) {
+       dequeueOnce();
+     }
+   }, 1000);
+   return () => clearInterval(id);
+ }, [shouldDequeue, dequeueOnce]);
+
 
   useEffect(() => {
     if (mode !== "auto") return;          // 자동 모드에서만 작동
@@ -267,7 +277,7 @@ export default function Sensor() {
             </Paper>
 
             <Paper sx={{ width: "27%", backgroundColor: "#41515B", borderRadius: "25px" }}>
-              <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px" }}>LEL</Typography>
+              <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px" }}>가스 농도</Typography>
               <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1, mt: "50px" }}>
                 <Typography sx={{ color: "#FFFFFF", m: 0, fontSize: "30px", lineHeight: 1, textAlign: "center" }}>
                   {logs[0]?.lel_value != null ? Number(logs[0].lel_value).toFixed(3) : "수치"}
@@ -380,7 +390,7 @@ export default function Sensor() {
                 <span style={{ textAlign: "center" }}>시간</span>
                 <span style={{ textAlign: "center" }}>가스 종류</span>
                 <span style={{ textAlign: "center" }}>예측값</span>
-                <span style={{ textAlign: "center" }}>LEL</span>
+                <span style={{ textAlign: "center" }}>가스 농도</span>
                 <span style={{ textAlign: "center" }}>상태</span>
               </Paper>
 
