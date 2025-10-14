@@ -81,26 +81,6 @@ export default function Option() {
 
   };
 
-  // const LabelInput = ({ label, name, placeholder, }) => (
-  //   <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-  //     <Typography sx={{ color: "#fff", fontSize: 14 }}>{label}</Typography>
-  //     <Input
-  //       name={name}
-  //       value={editForm[name]}
-  //       onChange={handleChange}
-  //       disableUnderline
-  //       placeholder={placeholder}
-  //       sx={{
-  //         mt: "6px",
-  //         width: "100%",
-  //         bgcolor: "#fff",
-  //         height: 40,
-  //         borderRadius: "10px",
-  //         px: "10px",
-  //       }}
-  //     />
-  //   </Box>
-  // );
 
   const showValue = (val, fallback = "-") =>
     val && val.toString().trim() !== "" ? val : fallback;
