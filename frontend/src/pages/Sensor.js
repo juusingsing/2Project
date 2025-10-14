@@ -134,7 +134,9 @@ export default function Sensor() {
 
     const next = buf.shift();
     bufferRef.current = buf;
-    setLogs((prev) => [next, ...prev].slice(0, MAX_VISIBLE));
+    const displayed = { ...next, _shownAt: new Date().toISOString() };
+    // setLogs((prev) => [next, ...prev].slice(0, MAX_VISIBLE));
+    setLogs((prev) => [displayed, ...prev].slice(0, MAX_VISIBLE));
 
     // 버퍼가 3개 이하 남으면 과거 페이지 미리 채우기
     if (bufferRef.current.length < 3) {
@@ -405,7 +407,7 @@ useEffect(() => {
                     alignItems: "center",
                   }}
                 >
-                  <span style={{ textAlign: "center" }}>{new Date(r.created_at).toLocaleString()}</span>
+                  <span style={{ textAlign: "center" }}>{new Date(r._shownAt ?? r._recvAt ?? r.created_at).toLocaleString()}</span>
                   <span style={{ textAlign: "center" }}>{r.pred_gas_class}</span>
                   <span style={{ textAlign: "center" }}>{r.pred_gas_value ?? "-"}</span>
                   <span style={{ textAlign: "center" }}>
