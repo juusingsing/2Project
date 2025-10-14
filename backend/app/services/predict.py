@@ -176,23 +176,31 @@ def search_alert_logs(engine, gas_class, specific_state, offset, limit) -> pd.Da
             CAST(lel_value AS DOUBLE) AS lel_value
         FROM {TABLE_OUTPUT}
     """
-    conditions = ["state != '안전'"]
+
+    # 모든 상태 허용: 초기 조건 비움
+    conditions = []
     params = {"limit": limit, "offset": offset}
+
     if gas_class:
         conditions.append("pred_gas_class = :gas_class")
         params["gas_class"] = gas_class
+
     if specific_state:
         conditions.append("state = :specific_state")
         params["specific_state"] = specific_state
 
-    where_clause = " WHERE " + " AND ".join(conditions)
+    # 조건이 있으면 WHERE, 없으면 공백
+    where_clause = f" WHERE {' AND '.join(conditions)}" if conditions else ""
+
     q = f"""
         {base}
         {where_clause}
         ORDER BY created_at DESC, sample_id DESC
         LIMIT :limit OFFSET :offset
     """
+
     return pd.read_sql(text(q), con=engine, params=params)
+
 
 
 def run_prediction() -> dict:
