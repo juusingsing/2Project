@@ -15,7 +15,7 @@ export default function PwResetId() {
     const idCheck = async (id) => {
         // 1. 아이디 공백
         if (!id?.trim()) {
-            alert("아이디를 작성해주세요.");
+            alert("아이디를 입력해주세요.");
             return;
         }
 

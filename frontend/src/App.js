@@ -17,26 +17,28 @@ import Option from "./pages/Option";
 import MainLayout from "./layouts/MainLayout";
 import TopBar from "../src/componants/TopBar";
 import Menu from "../src/componants/Menu";
-
+import RequireAuth from "./componants/RequireAuth";
 
 function App() {
-  
+
   return (
     <Router>
       <Routes>
         <Route path="/" element={<HeroSection />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/idfind" element={<IdFind/>}/>
-        <Route path="/idfindresult" element={<IdFindResult/>}/>
-        <Route path="/pwresetid" element={<PwResetId/>}/>
-        <Route path="/pwresetemail" element={<PwResetEmail/>}/>
-        <Route path="/pwreset" element={<PwReset/>}/>
-        <Route element={<MainLayout />}>
-        <Route path="/main" element={<Main />} />
-        <Route path="/sensor" element={<Sensor />} />
-        <Route path="/option" element={<Option />} />
-        <Route path="/video" element={<Video/>}/>
+        <Route path="/idfind" element={<IdFind />} />
+        <Route path="/idfindresult" element={<IdFindResult />} />
+        <Route path="/pwresetid" element={<PwResetId />} />
+        <Route path="/pwresetemail" element={<PwResetEmail />} />
+        <Route path="/pwreset" element={<PwReset />} />
+        <Route element={<RequireAuth />}>
+          <Route element={<MainLayout />}>
+            <Route path="/main" element={<Main />} />
+            <Route path="/sensor" element={<Sensor />} />
+            <Route path="/option" element={<Option />} />
+            <Route path="/video" element={<Video />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

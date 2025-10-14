@@ -66,7 +66,7 @@ export default function Option() {
   const handleSubmit = async () => {
     // 이름 값 유효성 검사
     if (!editForm.name || editForm.name.trim() === "") {
-      alert("이름은 필수 입력 항목입니다.");
+      alert("이름을 입력해주세요.");
       return;
     }
     
@@ -74,7 +74,7 @@ export default function Option() {
       const res = await axios.post(`${BASE_URL}/users/editUser`, editForm);
       setInfo({ ...editForm });
       setEditModalOpen(false);
-      alert("수정되었습니다.")
+      alert("회원정보가 수정되었습니다.")
     } catch (err) {
       alert("회원정보 수정 실패");
     }
@@ -299,16 +299,7 @@ export default function Option() {
           </Box>
         </Paper>
 
-        {/* Recent Login */}
-        <Paper sx={{ bgcolor: "#41515B", m: "20px 50px", borderRadius: "15px" }}>
-          <Typography sx={{ fontWeight: 500, fontSize: "18px", color: "#fff", p: 2 }}>
-            최근 로그인
-          </Typography>
-          <Box sx={{ p: 2, color: "#dbe2e8" }}>
-            {/* TODO: 최근 로그인 내역 리스트/테이블 렌더링 */}
-            기록 없음
-          </Box>
-        </Paper>
+        
       </Box>
     </>
   );

@@ -49,7 +49,7 @@ export default function PwReset() {
             navigate("/login", { replace: true });
         } catch (err) {
             console.error(err);
-            alert(err?.response?.data?.detail || "비밀번호 변경에 실패했습니다.");
+            alert(err?.response?.data?.detail || "비밀번호 변경을 실패하였습니다.");
         }
     };
 
