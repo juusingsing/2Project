@@ -122,7 +122,7 @@ def concentration_to_lel(gas_name: str, ppm: float) -> tuple[float, str]:
         return (np.nan, "ERROR")
     lel_ppm, lel_basis_percent = GAS_LEL[gas_name]
     lel_percent = (ppm / float(lel_ppm)) * 100.0
-    if lel_percent >= (lel_basis_percent * 0.25):
+    if lel_percent >= (lel_basis_percent * 0.2):
         state = "위험(차단)"
     elif lel_percent >= (lel_basis_percent * 0.10):
         state = "주의"
