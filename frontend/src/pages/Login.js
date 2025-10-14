@@ -6,6 +6,8 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import axios from "axios"
 import { useEffect, useState } from "react";
 
+sessionStorage.removeItem("__login_alert_once__");
+
 export default function Login() {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
     const navigate = useNavigate();
@@ -16,6 +18,10 @@ export default function Login() {
 
     const userLogin = async () => {
         try {
+            if (!id?.trim() || !password) {
+                alert("아이디와 비밀번호를 모두 입력해주세요.");
+                return;
+            }
             const res = await axios.post(`${BASE_URL}/users/login`, {
                 user_id: id,
                 password: password,
@@ -27,11 +33,11 @@ export default function Login() {
             sessionStorage.setItem("user_id", res?.data?.user?.user_id);
             sessionStorage.setItem("name", res?.data?.user?.name);
             sessionStorage.setItem("email", res?.data?.user?.email);
-            alert("로그인 성공");
+            alert("로그인에 성공했습니다.");
             navigate('/main');
         } catch (err) {
             console.error("로그인 실패", err);
-            alert(err?.response?.data?.detail);
+            alert(err?.response?.data?.detail ?? "아이디 또는 비밀번호를 확인해주세요.");
         }
     };
     return (
@@ -45,7 +51,6 @@ export default function Login() {
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
                 justifyContent: 'center'
-
             }}>
                 <Box maxWidth="lg" sx={{ position: "relative", p: '75px 120px 0px 120px', marginTop: '13%', marginBottom: '18%', background: "rgba(90, 90, 90, 0.43)" }} >
                     <ArrowBackIosIcon sx={{ color: "#ffffffff", position: 'absolute', top: '15px', left: '18px', cursor: 'pointer' }} onClick={() => navigate(-1)} />

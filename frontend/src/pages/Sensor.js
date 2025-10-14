@@ -1,6 +1,6 @@
 // src/pages/Sensor.js
-import React, {  useEffect,  useMemo,  useRef,  useState,  useCallback,} from "react";
-import { Box, Typography, Stack, Paper, Button, Chip,  FormControl, Select, MenuItem } from "@mui/material";
+import React, { useEffect, useMemo, useRef, useState, useCallback, } from "react";
+import { Box, Typography, Stack, Paper, Button, Chip, FormControl, Select, MenuItem } from "@mui/material";
 import ModeToggle from "../componants/Toggle.js";
 import axios from "axios";
 
@@ -19,7 +19,7 @@ export default function Sensor() {
   const bufferRef = useRef([]);               // 서버에서 가져온 최신 로그 버퍼 (FIFO)
   const seenRef = useRef(new Set());          // 중복 방지 키 저장
   const fetchTimerRef = useRef(null);         // 서버 폴링 타이머(2초)
-  const dequeueTimerRef = useRef(null);       // 디큐 타이머(1초)
+  // const dequeueTimerRef = useRef(null);       // 디큐 타이머(1초)
 
   const nextOffsetRef = useRef(15);     // 다음 과거 페이지 offset (초기값)
   const noMoreOlderRef = useRef(false); // 과거 더 없음 플래그
@@ -28,14 +28,14 @@ export default function Sensor() {
   const [filterGas, setFilterGas] = useState("ALL");
   const [filterState, setFilterState] = useState("ALL");
   // 화면에서 항상 보여줄 가스 전체 목록
-  const GAS_CATALOG = ["에탄올","에틸렌","암모니아","아세트알데히드","아세톤","톨루엔"];
+  const GAS_CATALOG = ["에탄올", "에틸렌", "암모니아", "아세트알데히드", "아세톤", "톨루엔"];
 
   const gasOptions = useMemo(() => {
     const fromLogs = Array.from(new Set(logs.map(v => v?.pred_gas_class).filter(Boolean)));
     return Array.from(new Set([...GAS_CATALOG, ...fromLogs]));
   }, [logs]);
 
-  const stateOptions = ["주의", "위험"];
+  const stateOptions = ["안전", "주의", "위험"];
 
   // 화면 표시용 필터 결과
   const filteredLogs = useMemo(() => {
@@ -43,7 +43,7 @@ export default function Sensor() {
       const gOk = filterGas === "ALL" || r.pred_gas_class === filterGas;
       const sOk =
         filterState === "ALL" ||
-        (r.state && (filterState === "위험" ? r.state.startsWith("위험") : r.state === "주의"));
+        (r.state && (filterState === "위험" ? r.state.startsWith("위험") : filterState === "주의" ? r.state.startsWith("주의") : filterState === "안전" ? r.state === "안전" : false));
       return gOk && sOk;
     });
   }, [logs, filterGas, filterState]);
@@ -52,12 +52,13 @@ export default function Sensor() {
 
   // 상태 색상 
   const stateChipSx = (state) => {
-    if (state === "주의") return { backgroundColor: "#FFEB3B", color: "#000", fontWeight: 700 };      // 노란색
-    if (state?.startsWith("위험")) return { backgroundColor: "#FF9800", color: "#000", fontWeight: 700 }; // 주황색
+    if (state === "안전") return { backgroundColor: "#519252ff", color: '#ffffff' }
+    if (state?.startsWith("주의")) return { backgroundColor: "#dc9f2fff", color: "#ffffff", fontWeight: 700 };      // 노란색
+    if (state?.startsWith("위험")) return { backgroundColor: "#c94736ff", color: "#ffffff", fontWeight: 700 }; // 주황색
     return { backgroundColor: "#9E9E9E", color: "#fff" }; // 기타
   };
 
-  
+
   // 로그 고유키 생성(중복 체크용)
   const keyOf = useCallback((r) => `${r.sample_id}-${r.created_at}`, []);
 
@@ -133,7 +134,9 @@ export default function Sensor() {
 
     const next = buf.shift();
     bufferRef.current = buf;
-    setLogs((prev) => [next, ...prev].slice(0, MAX_VISIBLE));
+    const displayed = { ...next, _shownAt: new Date().toISOString() };
+    // setLogs((prev) => [next, ...prev].slice(0, MAX_VISIBLE));
+    setLogs((prev) => [displayed, ...prev].slice(0, MAX_VISIBLE));
 
     // 버퍼가 3개 이하 남으면 과거 페이지 미리 채우기
     if (bufferRef.current.length < 3) {
@@ -154,7 +157,7 @@ export default function Sensor() {
         if (data?.mode) setMode(data.mode);
         if (data?.valve) setValve(data.valve);
       } catch {
-        
+
       }
     })();
   }, [api]);
@@ -179,23 +182,47 @@ export default function Sensor() {
   }, [api, pushToBuffer]);
 
   // 디큐 타이머 — 1초에 한 줄씩 화면에 쌓기 (모드/밸브에 따라 on/off)
+  // useEffect(() => {
+
+  //   const on = shouldDequeue();
+  //   if (on && !dequeueTimerRef.current) {
+  //     dequeueOnce();
+  //     dequeueTimerRef.current = setInterval(dequeueOnce, 1000);
+  //   } else if (!on && dequeueTimerRef.current) {
+  //     clearInterval(dequeueTimerRef.current);
+  //     dequeueTimerRef.current = null;
+  //   }
+  //   return () => {
+  //     if (dequeueTimerRef.current) {
+  //       clearInterval(dequeueTimerRef.current);
+  //       dequeueTimerRef.current = null;
+  //     }
+  //   };
+  // }, [shouldDequeue, dequeueOnce]);
+
+useEffect(() => {
+   const id = setInterval(() => {
+     if (shouldDequeue()) {
+       dequeueOnce();
+     }
+   }, 1000);
+   return () => clearInterval(id);
+ }, [shouldDequeue, dequeueOnce]);
+
+
   useEffect(() => {
-    
-    const on = shouldDequeue();
-    if (on && !dequeueTimerRef.current) {
-      dequeueOnce(); 
-      dequeueTimerRef.current = setInterval(dequeueOnce, 1000);
-    } else if (!on && dequeueTimerRef.current) {
-      clearInterval(dequeueTimerRef.current);
-      dequeueTimerRef.current = null;
-    }
-    return () => {
-      if (dequeueTimerRef.current) {
-        clearInterval(dequeueTimerRef.current);
-        dequeueTimerRef.current = null;
-      }
-    };
-  }, [shouldDequeue, dequeueOnce]);
+    if (mode !== "auto") return;          // 자동 모드에서만 작동
+    const latest = logs[0];
+    if (!latest) return;
+
+    const s = latest.state;
+    const shouldLock = s?.startsWith("위험") || s?.startsWith("주의");
+    const shouldOpen = s === "안전";
+
+    if (shouldLock && valve !== "closed") setValve("closed"); // 위험/주의 → 잠김
+    if (shouldOpen && valve !== "open") setValve("open");     // 안전 → 해제
+  }, [mode, logs, valve]);
+
 
   // 제어 핸들러(선택 기능: 백엔드 있으면 연동)
   const handleModeChange = async (next) => {
@@ -243,7 +270,7 @@ export default function Sensor() {
 
         <Box sx={{ justifyItems: "center" }}>
           {/* 상단 카드 */}
-          <Stack direction="row" spacing={6} sx={{ width: "100vw", justifyContent: "center" }}>
+          <Stack direction="row" spacing={6} sx={{ width: "99.2vw", justifyContent: "center" }}>
             <Paper sx={{ width: "27%", height: "220px", backgroundColor: "#41515B", borderRadius: "25px" }}>
               <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px" }}>가스</Typography>
               <Typography sx={{ textAlign: "center", color: "#FFFFFF", mt: "50px", fontSize: "30px" }}>
@@ -252,7 +279,7 @@ export default function Sensor() {
             </Paper>
 
             <Paper sx={{ width: "27%", backgroundColor: "#41515B", borderRadius: "25px" }}>
-              <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px" }}>LEL</Typography>
+              <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px" }}>가스 농도</Typography>
               <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1, mt: "50px" }}>
                 <Typography sx={{ color: "#FFFFFF", m: 0, fontSize: "30px", lineHeight: 1, textAlign: "center" }}>
                   {logs[0]?.lel_value != null ? Number(logs[0].lel_value).toFixed(3) : "수치"}
@@ -263,7 +290,7 @@ export default function Sensor() {
 
             <Paper sx={{ width: "27%", height: "220px", borderRadius: "25px", textAlign: "center", ...(stateChipSx(logs[0]?.state) ?? { backgroundColor: "#41515B", color: "#FFFFFF" }) }}>
               <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px", textAlign: "left" }}>상태</Typography>
-              <Typography sx={{ mt: "50px", fontSize: "30px", fontWeight: 700, color: logs[0]?.state === "주의" ? "#000" : logs[0]?.state?.startsWith("위험") ? "#000" : "#FFFFFF" }}>
+              <Typography sx={{ mt: "50px", fontSize: "30px", fontWeight: 700, color: logs[0]?.state === "주의" ? "#ffffff" : logs[0]?.state?.startsWith("위험") ? "#ffffff" : "#FFFFFF" }}>
                 {logs[0]?.state ?? "상태"}
               </Typography>
             </Paper>
@@ -281,7 +308,7 @@ export default function Sensor() {
               <Typography>현재 상태:</Typography>
               <Typography sx={{ fontSize: "20px", fontWeight: 600 }}>{currStateText}</Typography>
               <Chip
-                sx={{ backgroundColor: valve === "closed" ? "#ffb168ff" : "#80d6bfff" }}
+                sx={{ backgroundColor: valve === "closed" ? "#b85353ff" : "#5f8962ff", color:"#fff", p:1 }}
                 label={currStateChip}
                 size="small"
               />
@@ -324,31 +351,31 @@ export default function Sensor() {
           </Paper>
 
           {/* 예측 로그: 최신이 위, 최대 15줄 유지 */}
-          <Paper sx={{ width: "90%", mt: 3, borderRadius: "15px", mx: "auto", p: 2 }}>
+          <Paper sx={{ width: "90%", mt: 3, borderRadius: "15px", mx: "auto", p: 2, mb:1 }}>
             <Box sx={{ p: "0 20px 10px" }}>
               <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>예측 로그</Typography>
               <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end", alignItems: "center" }}>
                 {/* 가스 종류 필터 */}
                 <FormControl size="small" sx={{ minWidth: 120 }}>
-                  <Select value={filterGas} onChange={(e)=>setFilterGas(e.target.value)} displayEmpty>
+                  <Select value={filterGas} onChange={(e) => setFilterGas(e.target.value)} displayEmpty>
                     <MenuItem value="ALL">가스 종류</MenuItem>
                     {gasOptions.map(g => (<MenuItem key={g} value={g}>{g}</MenuItem>))}
                   </Select>
                 </FormControl>
                 {/* 상태 필터 */}
                 <FormControl size="small" sx={{ minWidth: 100 }}>
-                  <Select value={filterState} onChange={(e)=>setFilterState(e.target.value)} displayEmpty>
+                  <Select value={filterState} onChange={(e) => setFilterState(e.target.value)} displayEmpty>
                     <MenuItem value="ALL">상태</MenuItem>
                     {stateOptions.map(s => (<MenuItem key={s} value={s}>{s}</MenuItem>))}
                   </Select>
                 </FormControl>
                 {/* 초기화(선택사항) */}
-                <Button onClick={()=>{setFilterGas("ALL"); setFilterState("ALL");}} sx={{ height: 36 }}>
+                <Button onClick={() => { setFilterGas("ALL"); setFilterState("ALL"); }} sx={{ height: 36 }}>
                   초기화
                 </Button>
               </Box>
             </Box>
-            <Box sx={{ display: "grid", gap: 1 }}>
+            <Box sx={{ display: "grid", gap: 1, }}>
               <Paper
                 sx={{
                   p: 1.2,
@@ -359,13 +386,13 @@ export default function Sensor() {
                   fontWeight: 700,
                   borderRadius: "10px",
                   gap: 8,
-                  alignItems: "center", 
+                  alignItems: "center",
                 }}
               >
                 <span style={{ textAlign: "center" }}>시간</span>
                 <span style={{ textAlign: "center" }}>가스 종류</span>
                 <span style={{ textAlign: "center" }}>예측값</span>
-                <span style={{ textAlign: "center" }}>LEL</span>
+                <span style={{ textAlign: "center" }}>가스 농도</span>
                 <span style={{ textAlign: "center" }}>상태</span>
               </Paper>
 
@@ -375,18 +402,20 @@ export default function Sensor() {
                   sx={{
                     p: 1.5,
                     display: "grid",
-                    gridTemplateColumns: "200px 1fr 110px 120px 130px", 
+                    gridTemplateColumns: "200px 1fr 110px 120px 130px",
                     gap: 8,
-                    alignItems: "center", 
+                    alignItems: "center",
                   }}
                 >
-                  <span style={{ textAlign: "center" }}>{new Date(r.created_at).toLocaleString()}</span>
+                  <span style={{ textAlign: "center" }}>{new Date(r._shownAt ?? r._recvAt ?? r.created_at).toLocaleString()}</span>
                   <span style={{ textAlign: "center" }}>{r.pred_gas_class}</span>
                   <span style={{ textAlign: "center" }}>{r.pred_gas_value ?? "-"}</span>
                   <span style={{ textAlign: "center" }}>
                     {r.lel_value != null ? `${Number(r.lel_value).toFixed(3)}%` : "-"}
                   </span>
-                  <Chip label={r.state} size="small" sx={stateChipSx(r.state)} />
+                  <Box sx={{display:'flex', justifyContent:'center'}}>
+                  <Chip label={r.state} size="small" sx={[stateChipSx(r.state),{p:2, }]} />
+                  </Box>
                 </Paper>
               ))}
             </Box>

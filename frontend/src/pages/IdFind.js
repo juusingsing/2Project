@@ -43,10 +43,10 @@ export default function IdFind() {
             })
             const result = res?.data?.result; // "verified" | "already verified"
             if (result === "verified" || result === "already verified") {
-                alert("이메일 인증에 성공하였습니다.");
+                alert("이메일 인증을 성공하였습니다.");
                 setDupEmailCheck(true);   // ✅ 최종 인증 통과
             } else {
-                alert("이메일 인증에 실패했습니다.");
+                alert("이메일 인증을 실패했습니다.");
                 setDupEmailCheck(false);
             }
         } catch (err) {

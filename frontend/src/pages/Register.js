@@ -30,7 +30,7 @@ export default function Register() {
     const userRegister = async () => {
         // 1. 아이디 공백
         if (!id?.trim()) {
-            alert("아이디를 작성해주세요.");
+            alert("아이디를 입력해주세요.");
             return;
         }
 
@@ -42,7 +42,7 @@ export default function Register() {
 
         // 3. 비밀번호 공백
         if (!password?.trim()) {
-            alert("비밀번호를 작성해주세요.");
+            alert("비밀번호를 입력해주세요.");
             return;
         }
 
@@ -54,7 +54,7 @@ export default function Register() {
 
         // 5. 이름 공백
         if (!name?.trim()) {
-            alert("이름을 작성해주세요.");
+            alert("이름을 입력해주세요.");
             return;
         }
 
@@ -85,7 +85,7 @@ export default function Register() {
                 err?.response?.data
             );
             console.error("회원가입 실패", err);
-            alert("회원가입 실패");
+            alert("회원가입에 실패하였습니다.");
         }
     };
 
@@ -102,7 +102,7 @@ export default function Register() {
             }
         } catch (err) {
             console.error("아이디 중복체크 실패", err);
-            alert("중복체크 실패");
+            alert("중복체크를 실패하였습니다.");
             setDupIdCheck(false);
         }
     };
@@ -145,8 +145,8 @@ export default function Register() {
             })
             const result = res?.data?.result; // "verified" | "already verified"
             if (result === "verified" || result === "already verified") {
-                alert("이메일 인증 완료!");
-                setDupEmailCheck(true);   // ✅ 최종 인증 통과
+                alert("이메일 인증에 성공하였습니다.");
+                setDupEmailCheck(true);   // 최종 인증 통과
             } else {
                 alert("이메일 인증에 실패했습니다.");
                 setDupEmailCheck(false);

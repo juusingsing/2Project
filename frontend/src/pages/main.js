@@ -11,13 +11,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Main() {
 
-    // const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
-    // const location = useLocation();
-    // useEffect(() => setMenuOpen(false), [location.pathname]);
+
     return (
         <>
-            {/* <TopBar open={menuOpen} onToggle={() => setMenuOpen((v) => !v)} welcomeText="님 환영합니다!" /> */}
             <Box sx={{
                 width: "100%",
                 minHeight: "650px",
@@ -106,11 +103,6 @@ export default function Main() {
                     </Container>
                 </Box>
             </Box>
-            {/* <Menu
-                open={menuOpen}
-                onClose={() => setMenuOpen(false)}
-                onSelect={(it) => it.path && navigate(it.path)}
-            /> */}
         </>
     )
 }
