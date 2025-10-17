@@ -22,7 +22,11 @@ async def websocket_endpoint(ws: WebSocket):
     clients.append(ws)
     await ws.send_json({"msg": "connected!"})
 
-    # 수정됨: 현재 block_states 전송
+    # 연결 시 모든 상태를 False로 초기화
+    for vid in block_states.keys():
+        block_states[vid] = False
+
+    # 현재 block_states 전송
     for vid, state in block_states.items():
         await ws.send_json({"video": vid, "blocking": state})
 

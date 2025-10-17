@@ -202,6 +202,7 @@ def search_alert_logs(engine, gas_class, specific_state, offset, limit) -> pd.Da
     return pd.read_sql(text(q), con=engine, params=params)
 
 
+
 def run_prediction() -> dict:
     """
     samples_wide → 모델링 → predictions_wide 적재
