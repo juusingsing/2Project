@@ -37,3 +37,16 @@ html, body {
 *::-webkit-scrollbar-thumb:hover {
   background: #0e293a;
 }
+
+
+.loader {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background-color: #69ffa8;
+  animation: 1.5s pulse infinite ease-in-out;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 #69ffa8; }
+  100% { box-shadow: 0 0 0 14px #69ffa800; }
+}

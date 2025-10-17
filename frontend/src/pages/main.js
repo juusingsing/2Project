@@ -37,7 +37,8 @@ export default function Main() {
                 </Container>
             </Box>
             <Box sx={{
-                marginBlock: '20px',
+                marginTop: '20px',
+                marginBottom: '30px',
                 paddingInline: '20px',
                 display: 'flex',
                 justifyContent: 'space-between'
@@ -67,7 +68,7 @@ export default function Main() {
                         </Box>
 
                         <Typography color="grey.100" mt={1} mb={4}>
-                            실시간 농도 모니터링<br />
+                            실시간 가스 농도 모니터링<br />
                             이상치 알림
                         </Typography>
 
@@ -92,13 +93,13 @@ export default function Main() {
                     <Container maxWidth="lg" sx={{ mt: '10%', ml: '4%' }} >
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Typography fontSize="28px" color="common.white" fontWeight={700}>
-                                영상
+                                CCTV
                             </Typography>
                             <ArrowForwardIosIcon sx={{ color: '#FFFFFF' }} />
                         </Box>
                         <Typography color="grey.100" mt={1} mb={4}>
-                            카메라·열화상 분석<br />
-                            누출을 ‘발생 전에’ 멈추는 방법
+                        
+                            가스 누출 탐지<br/>차단 자동화
                         </Typography>
                     </Container>
                 </Box>

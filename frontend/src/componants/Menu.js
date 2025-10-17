@@ -7,7 +7,7 @@ export default function BottomMenu({ open, onClose, onSelect }) {
     const items = [
         { key: "home", label: "홈", path: "/main" },
         { key: "sensor", label: "센서", path: "/sensor" },
-        { key: "video", label: "영상", path: "/video" },
+        { key: "video", label: "CCTV", path: "/video" },
     ];
     const bottomItems = [
         { key: "option", label: "설정", path: "/option" },

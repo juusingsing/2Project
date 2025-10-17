@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useRef, useState, useCallback, } from "react
 import { Box, Typography, Stack, Paper, Button, Chip, FormControl, Select, MenuItem } from "@mui/material";
 import ModeToggle from "../componants/Toggle.js";
 import axios from "axios";
+import CircleIcon from '@mui/icons-material/Circle';
 
 export default function Sensor() {
   // 환경설정
@@ -200,14 +201,14 @@ export default function Sensor() {
   //   };
   // }, [shouldDequeue, dequeueOnce]);
 
-useEffect(() => {
-   const id = setInterval(() => {
-     if (shouldDequeue()) {
-       dequeueOnce();
-     }
-   }, 1000);
-   return () => clearInterval(id);
- }, [shouldDequeue, dequeueOnce]);
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (shouldDequeue()) {
+        dequeueOnce();
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [shouldDequeue, dequeueOnce]);
 
 
   useEffect(() => {
@@ -271,14 +272,14 @@ useEffect(() => {
         <Box sx={{ justifyItems: "center" }}>
           {/* 상단 카드 */}
           <Stack direction="row" spacing={6} sx={{ width: "99.2vw", justifyContent: "center" }}>
-            <Paper sx={{ width: "27%", height: "220px", backgroundColor: "#41515B", borderRadius: "25px" }}>
+            <Paper sx={{ width: "28.25%", height: "220px", backgroundColor: "#41515B", borderRadius: "25px" }}>
               <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px" }}>가스</Typography>
               <Typography sx={{ textAlign: "center", color: "#FFFFFF", mt: "50px", fontSize: "30px" }}>
                 {logs[0]?.pred_gas_class ?? "가스 종류"}
               </Typography>
             </Paper>
 
-            <Paper sx={{ width: "27%", backgroundColor: "#41515B", borderRadius: "25px" }}>
+            <Paper sx={{ width: "28.25%", backgroundColor: "#41515B", borderRadius: "25px" }}>
               <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px" }}>가스 농도</Typography>
               <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1, mt: "50px" }}>
                 <Typography sx={{ color: "#FFFFFF", m: 0, fontSize: "30px", lineHeight: 1, textAlign: "center" }}>
@@ -288,7 +289,7 @@ useEffect(() => {
               </Box>
             </Paper>
 
-            <Paper sx={{ width: "27%", height: "220px", borderRadius: "25px", textAlign: "center", ...(stateChipSx(logs[0]?.state) ?? { backgroundColor: "#41515B", color: "#FFFFFF" }) }}>
+            <Paper sx={{ width: "28.25%", height: "220px", borderRadius: "25px", textAlign: "center", ...(stateChipSx(logs[0]?.state) ?? { backgroundColor: "#41515B", color: "#FFFFFF" }) }}>
               <Typography sx={{ color: "#FFFFFF", m: "15px 0 0 20px", fontSize: "20px", textAlign: "left" }}>상태</Typography>
               <Typography sx={{ mt: "50px", fontSize: "30px", fontWeight: 700, color: logs[0]?.state === "주의" ? "#ffffff" : logs[0]?.state?.startsWith("위험") ? "#ffffff" : "#FFFFFF" }}>
                 {logs[0]?.state ?? "상태"}
@@ -298,17 +299,30 @@ useEffect(() => {
           </Stack>
 
           {/* 벨브 제어 */}
-          <Paper sx={{ width: "90%", mt: 5, borderRadius: "15px", mx: "auto" }}>
-            <Box sx={{ display: "flex", p: "15px 20px", justifyContent: "space-between" }}>
-              <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>벨브 제어</Typography>
-              <ModeToggle value={mode} onChange={handleModeChange} width={140} height={40} />
-            </Box>
-
+          <Paper sx={{ width: "92.45%", mt: 5, borderRadius: "15px", mx: "auto" }}>
+            {!isManual && (
+              <Box sx={{ display: "flex", p: "15px 20px", justifyContent: "space-between" }}>
+                <Box sx={{ display: "flex", alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>벨브 제어</Typography>
+                  <Box sx={{ display: 'flex', ml: 2, alignItems:'center' }}>
+                    <Box className="loader"></Box>
+                    <Typography sx={{ fontSize: '12px', ml: 1 }}>AI 작동중</Typography>
+                  </Box>
+                </Box>
+                <ModeToggle value={mode} onChange={handleModeChange} width={140} height={40} />
+              </Box>
+            )}
+            {isManual && (
+              <Box sx={{ display: "flex", p: "15px 20px", justifyContent: "space-between" }}>
+                <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>벨브 제어</Typography>
+                <ModeToggle value={mode} onChange={handleModeChange} width={140} height={40} />
+              </Box>
+            )}
             <Box sx={{ display: "flex", gap: 1, ml: 2, alignItems: "center" }}>
               <Typography>현재 상태:</Typography>
               <Typography sx={{ fontSize: "20px", fontWeight: 600 }}>{currStateText}</Typography>
               <Chip
-                sx={{ backgroundColor: valve === "closed" ? "#b85353ff" : "#5f8962ff", color:"#fff", p:1 }}
+                sx={{ backgroundColor: valve === "closed" ? "#b85353ff" : "#5f8962ff", color: "#fff", p: 1 }}
                 label={currStateChip}
                 size="small"
               />
@@ -351,7 +365,7 @@ useEffect(() => {
           </Paper>
 
           {/* 예측 로그: 최신이 위, 최대 15줄 유지 */}
-          <Paper sx={{ width: "90%", mt: 3, borderRadius: "15px", mx: "auto", p: 2, mb:1 }}>
+          <Paper sx={{ width: "90%", mt: 3, borderRadius: "15px", mx: "auto", p: 2, mb: 1 }}>
             <Box sx={{ p: "0 20px 10px" }}>
               <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>예측 로그</Typography>
               <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end", alignItems: "center" }}>
@@ -413,8 +427,8 @@ useEffect(() => {
                   <span style={{ textAlign: "center" }}>
                     {r.lel_value != null ? `${Number(r.lel_value).toFixed(3)}%` : "-"}
                   </span>
-                  <Box sx={{display:'flex', justifyContent:'center'}}>
-                  <Chip label={r.state} size="small" sx={[stateChipSx(r.state),{p:2, }]} />
+                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <Chip label={r.state} size="small" sx={[stateChipSx(r.state), { p: 2, }]} />
                   </Box>
                 </Paper>
               ))}

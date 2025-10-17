@@ -240,7 +240,7 @@ export default function Option() {
         </Box>
       </Modal>
 
-      <Box sx={{ display: "flex", flexDirection: 'column', backgroundColor: '#92a5b6ff', minHeight: '100vh', width: "100%" }}>
+      <Box sx={{ display: "flex", flexDirection: 'column', backgroundColor: '#92a5b6ff', minHeight: '93vh', width: "100%" }}>
         {/* Header */}
         <Typography sx={{ fontSize: "24px", fontWeight: 600, p: "20px 0 0 60px", color: '#ffffffff' }}>
           설정
