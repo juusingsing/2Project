@@ -52,9 +52,51 @@
 [![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?&logo=Matplotlib&logoColor=black)](https://matplotlib.org/)
 [![OpenCV](https://img.shields.io/badge/opencv-%23white.svg?&logo=opencv&logoColor=white)](https://opencv.org/)
 [![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?&logo=mui&logoColor=white)](https://mui.com/)
-[![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?&logo=nginx&logoColor=white)](https://nginx.org/)
+[![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?&logo=nginx&logoColor=white)](https://nginx.org/)  
 
+## 👥 팀 구성
 
+| 이름 | 역할 |
+| --- | --- |
+| 👑 유지원 | 팀장, 이미지 모델링 총괄 |
+| 📊 박성언 | 센서 데이터 모델링 |
+| 🧪 최회민 | 모델링 총괄 |
+| 🎨 김나연 | 프론트엔드 총괄 |
+| 📷 서진현 | 이미지 데이터 모델링 |
+| 🖥 문주성 | 백엔드 총괄 (Docker 통합) |
+| ⚙️ 신보람 | 백엔드 담당 |
+
+---
+
+## 📅 일정 관리
+
+| 주차 | 주요 작업 |
+| --- | --- |
+| 🗓 1주차 | ✅ 주제 선정  ✅ 데이터 수집 |
+| 🗓 2주차 | 🛠 백엔드/프론트엔드 개발환경 구축  
+🧪 센서·이미지 모델링 시작 |
+| 🗓 3주차 | ⚙️ 모델링 고도화  🌐 API & 대시보드 구현 |
+| 🗓 4주차 | 📝 PPT 제작  🎥 시연 영상 제작 & 발표 |
+
+---
+
+---
+
+## 📈 자체 평가
+
+| 구분 | 내용 |
+| --- | --- |
+| 🌟 기대효과 | 인명·재산 피해 감소, 24시간 대응 가능 |
+| ⚠️ 한계점 | 실제 산업 장비 연동 한계, 실시간 검증 어려움 |
+| 🔧 개선 방향 | 센서+이미지 멀티모달 분석, 산업 현장 데이터 축적 |
+| 👨‍💻 팀원 성장 | Docker/WS 경험, 데이터 라벨링·모델링 확장, UI·백엔드 통합 경험 |
+
+---
+
+## 📎 참고 자료
+
+- 📰 [롯데 물류창고 가스 누출 사고 기사](https://www.khan.co.kr/article/202510141710001)
+- 🌍 [인도 LG공장 가스 누출 사고 기사](https://www.bbc.com/korean/news-52570235)
 
 
 
