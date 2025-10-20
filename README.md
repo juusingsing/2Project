@@ -21,7 +21,7 @@
 [![OpenCV](https://img.shields.io/badge/opencv-%23white.svg?&logo=opencv&logoColor=white)](https://opencv.org/)
 [![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?&logo=mui&logoColor=white)](https://mui.com/)
 [![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?&logo=nginx&logoColor=white)](https://nginx.org/)
-[![Axios]([https://img.shields.io/badge/Axios-5A29E4?.svg?&logo=Axios&logoColor=white)](https://axios-http.com/kr/)
+[![Axios]([https://img.shields.io/badge/Axios-%5A29E4.svg?&logo=Axios&logoColor=white)](https://axios-http.com/kr/)
 
 ![결과최종](https://github.com/user-attachments/assets/4574edfe-6fa6-49e8-90df-866d0949d565)
 
