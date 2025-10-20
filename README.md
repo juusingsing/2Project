@@ -19,8 +19,8 @@
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?&logo=TensorFlow&logoColor=white)](https://www.tensorflow.org/?hl=ko)
 [![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?&logo=Matplotlib&logoColor=black)](https://matplotlib.org/)
 [![OpenCV](https://img.shields.io/badge/opencv-%23white.svg?&logo=opencv&logoColor=white)](https://opencv.org/)
-[![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=plasic&logo=mui&logoColor=white)](https://mui.com/)
-[![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=plasic&logo=nginx&logoColor=white)](https://nginx.org/)
+[![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?&logo=mui&logoColor=white)](https://mui.com/)
+[![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?&logo=nginx&logoColor=white)](https://nginx.org/)
 
 
 ![결과최종](https://github.com/user-attachments/assets/4574edfe-6fa6-49e8-90df-866d0949d565)
