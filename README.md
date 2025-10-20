@@ -14,7 +14,7 @@
 [![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=plastic&logo=node.js&logoColor=white)](https://nodejs.org/ko/)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=plastic&logo=docker&logoColor=white)](https://www.docker.com/)
 [![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=plastic&logo=mysql&logoColor=white)](https://www.mysql.com/)
-
+[![Pandas](https://img.shields.io/badge/pandas-%23150458.svg?style=plastic&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
 
 
 ![결과최종](https://github.com/user-attachments/assets/4574edfe-6fa6-49e8-90df-866d0949d565)
