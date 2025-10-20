@@ -32,6 +32,35 @@
 
 ```
 
+```
+PROJECT2/
+├─ backend/
+│ ├─ app/
+│ │ ├─ api/
+│ │ ├─ core/
+│ │ ├─ db/
+│ │ ├─ schemas/
+│ │ ├─ services/
+│ │ └─ util/
+│ ├─ load_samples.py
+│ ├─ main.py
+│ ├─ requirements.txt
+│ └─ .env (개인용, 커밋 금지)
+└─ frontend/
+├─ public/
+├─ src/
+│ ├─ components/
+│ ├─ image/
+│ ├─ layouts/
+│ ├─ pages/
+│ ├─ App.js
+│ ├─ index.js
+│ └─ ...
+├─ package.json
+└─ .env (개인용)
+
+```
+
 ## 🧠 기술 스택
 [![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)](https://react.dev/)
