@@ -26,11 +26,13 @@
 [센서 데이터] → [LightGBM/XGBoost] → [예측 결과 DB 저장]
 [열화상 이미지] → [RT-CAN Segmentation] → [시각화 Overlay]
 
-[MySQL] ↔ [FastAPI/Node.js API] ↔ [React Front-End]
-                   ↕
-             [WebSocket 알림]
+[MySQL] ↔ [FastAPI] ↔ [React Front-End]
+              ↕
+       [WebSocket 알림]
 
 ```
+
+## 📁 프로젝트 구조
 
 ```
 PROJECT2/
