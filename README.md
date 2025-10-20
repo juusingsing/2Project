@@ -1,4 +1,15 @@
 <!-- README.md1 -->
+# **🛡️** Gas Shut-off: 가스 누출 분석 자동 차단
+
+## 📌 프로젝트 개요
+
+가정 및 산업 현장에서 발생하는 가스 누출 사고를 예방하고, 누출 감지 시 신속하게 가스 공급을 차단하여 인명 피해와 재산 손실을 최소화하는 것을 목표로 한다.
+본 프로젝트는 기존의 수동적 대응 방식을 넘어, **AI 기반의 실시간 감지와 자동 제어 시스템**을 도입함으로써 사용자의 인지 여부와 관계없이 24시간 안정적인 모니터링을 가능하게 한다. 특히, 다양한 가스 센서 데이터를 통해 농도를 정밀하게 예측하고, 열화상 카메라 영상 분석을 통해 누출 위치를 시각적으로 확인할 수 있어 **정량적 데이터와 정성적 시각 정보가 동시에 제공**된다.
+또한, 백엔드와 프론트엔드가 유기적으로 연동되어 예측 결과를 즉시 대시보드에 표시하고, WebSocket을 통해 실시간으로 위험 상황을 사용자에게 알림으로써 **사고 발생 시점에서 대응까지 걸리는 시간을 획기적으로 단축**한다. 이러한 구조는 단순한 연구용 모델 구현에 그치지 않고, **실제 산업 현장에 적용 가능한 스마트 안전 솔루션**으로 확장될 수 있는 잠재력을 지니고 있다.
+더 나아가, 본 시스템은 가스 누출뿐만 아니라 향후 화학물질 누출, 화재, 전기 위험 등 다양한 안전 리스크 탐지로 확장 가능하며, **산업 안전 관리 패러다임을 예방 중심·자동 대응 중심으로 변화시키는 기반 기술**이 될 것이다.
+
+![결과최종](https://github.com/user-attachments/assets/4574edfe-6fa6-49e8-90df-866d0949d565)  
+
 ## 🧠 기술 스택
 [![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)](https://react.dev/)
@@ -21,7 +32,7 @@
 [![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?&logo=mui&logoColor=white)](https://mui.com/)
 [![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?&logo=nginx&logoColor=white)](https://nginx.org/)
 
-![결과최종](https://github.com/user-attachments/assets/4574edfe-6fa6-49e8-90df-866d0949d565)
+
 
 
 
