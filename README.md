@@ -96,6 +96,7 @@ cd frontend
 npm start
 ```
 ✅ 실행 순서 요약
+
 .env 파일 생성
 가상환경 활성화 및 requirements.txt 설치
 백엔드 서버 실행
