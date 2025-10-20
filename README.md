@@ -60,8 +60,47 @@ PROJECT2/
 │ └─ ...
 ├─ package.json
 └─ .env (개인용)
-
 ```
+
+## 🚀 설치 방법
+1️⃣ 레포지토리 클론
+```
+git clone [해당 레포지토리 주소]
+```
+
+2️⃣ 백엔드 환경 설정
+/backend/.env 파일을 생성
+
+3️⃣ 가상환경 생성 및 패키지 설치 (Python)
+경로는 설치된 Python 버전에 따라 다릅니다.
+예: Python 3.11이 C:\Python311\python.exe에 설치된 경우 👇
+```
+C:\Python311\python.exe -m venv myenv_311
+.\myenv_311\Scripts\activate
+pip install -r requirements.txt
+
+# pip 최신화
+python.exe -m pip install --upgrade pip
+```
+
+4️⃣ 백엔드 실행
+```
+cd backend
+uvicorn app.main:app --reload
+```
+
+5️⃣ 프론트엔드 실행
+Node.js 설치 후 실행
+```
+cd frontend
+npm start
+```
+✅ 실행 순서 요약
+.env 파일 생성
+가상환경 활성화 및 requirements.txt 설치
+백엔드 서버 실행
+프론트엔드 실행
+
 
 ## 🧠 기술 스택
 [![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)](https://www.python.org/)
