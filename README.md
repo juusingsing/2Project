@@ -69,7 +69,7 @@ git clone [해당 레포지토리 주소]
 ```
 
 2️⃣ 백엔드 환경 설정
-/backend/.env 파일을 생성
+```/backend/.env```파일을 생성
 
 3️⃣ 가상환경 생성 및 패키지 설치 (Python)
 경로는 설치된 Python 버전에 따라 다릅니다.
@@ -100,7 +100,7 @@ npm start
 가상환경 활성화 및 requirements.txt 설치
 백엔드 서버 실행
 프론트엔드 실행
-
+---
 
 ## 🧠 기술 스택
 [![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)](https://www.python.org/)
