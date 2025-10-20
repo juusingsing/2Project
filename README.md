@@ -22,3 +22,4 @@
 ![결과최종](https://github.com/user-attachments/assets/4574edfe-6fa6-49e8-90df-866d0949d565)
 
 <img src="https://img.shields.io/badge/Python-3776AB?style=plastic&logo=Python&logoColor=white"/>
+<img src="https://img.shields.io/badge/Node.js-339933?style=plastic&logo=Node.js&logoColor=white"/>
