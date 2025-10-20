@@ -1,7 +1,7 @@
 <!-- README.md1 -->
 ## 🧠 기술 스택
 
-[![Amazon Alexa](https://img.shields.io/badge/amazon%20alexa-52b5f7?style=for-the-badge&logo=amazon%20alexa&logoColor=white)]
+[![Amazon Alexa](https://img.shields.io/badge/amazon%20alexa-52b5f7?style=plastic&logo=amazon%20alexa&logoColor=white)]
 [![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
