@@ -10,6 +10,16 @@
 
 ![결과최종](https://github.com/user-attachments/assets/4574edfe-6fa6-49e8-90df-866d0949d565)  
 
+## **🚀 주요 기능**
+
+| 기능 | 설명 |
+| --- | --- |
+| 🔬 센서 기반 탐지 | 16개 센서, 6종 가스 → 128 Feature  **LightGBM 분류 모델** / **XGBoost 회귀 모델** |
+| 📷 이미지 탐지 | 12,151장 열화상 + 영상 28개  **RT-CAN (GasSegNet)**, ResNet-152 기반 Segmentation |
+| ⛔ 자동 차단 | LEL 기준 위험도 설정 (20% 이상 → 자동 밸브 차단) |
+| 🖥 백엔드 | FastAPI + Node.js API, Docker 환경, MySQL DB, WebSocket 알림 |
+| 💻 프론트엔드 | React 대시보드, 실시간 상태 표시, 자동/수동 밸브 제어, CCTV 스트리밍 |
+
 ## 🧠 기술 스택
 [![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)](https://react.dev/)
