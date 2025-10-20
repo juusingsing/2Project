@@ -19,7 +19,7 @@
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=plastic&logo=TensorFlow&logoColor=white)](https://www.tensorflow.org/?hl=ko)
 [![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=plastic&logo=Matplotlib&logoColor=black)](https://matplotlib.org/)
 [![OpenCV](https://img.shields.io/badge/opencv-%23white.svg?style=plastic&logo=opencv&logoColor=white)](https://opencv.org/)
-[![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=plastic&logo=mui&logoColor=white)](https://mui.com/)
+[![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=plasic&logo=mui&logoColor=white)](https://mui.com/)
 [![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=plasic&logo=nginx&logoColor=white)](https://nginx.org/)
 
 
